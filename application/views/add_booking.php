@@ -1,4 +1,5 @@
 <?php $this->load->view('template/header'); ?>
+
 <link rel="stylesheet" type="text/css" href="<?php echo base_url();?>assets/lib/jquery.gritter/css/jquery.gritter.css"/>
 <style type="text/css">
 .dockslot{
@@ -127,7 +128,7 @@ h3.docleg > span::before{
                     <li data-step="2">Select Time & Dock Information<span class="chevron"></span></li>
                     <li data-step="3">Docks Selection<span class="chevron"></span></li>
                   </ul>
-                  <form action="<?php echo base_url('Booking/save');?>" class="form-horizontal" method="post">
+                  <form action="<?php echo base_url('Booking/save');?>" class="form-horizontal" method="post" enctype="multipart/form-data">
                   <div class="step-content">
                     <input type="hidden" name="VType" id="pVType">
                     <div data-step="1" class="step-pane active">
@@ -231,6 +232,13 @@ h3.docleg > span::before{
                         <input type="text" name="NRIC" id="NRIC" readonly="true" class="form-control">
                       </div>
                     </div>
+                        <!--Upload file input-->
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Attatch Documents</label>
+                        <div class="col-sm-6">
+                            <input type="file" name="upload_file" multiple/>
+                        </div>
+                    </div>
                     <?php if($this->session->userdata('Role') == 1) { ?>
                     <input type="hidden" value="Internal" name="UserType">
                     <!-- <div class="form-group">
@@ -243,6 +251,7 @@ h3.docleg > span::before{
                       </div>
                     </div> -->
                     <?php } else { echo '<input type="hidden" name="UserType" value="'.$this->session->userdata('UserType').'">'; }?>
+
                     <div class="form-group">
                       <div class="col-sm-offset-5 col-sm-10" style="padding: 15px 0;">
                         <a href="<?php echo base_url('Booking');?>" class="btn btn-space btn-default">Cancel</a>

@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
 class Users extends CI_Controller 
 {
 
@@ -42,6 +44,22 @@ class Users extends CI_Controller
     $data['Page'] = 'add_edit_users_list';  
     $data['Users'] = $this->User_model->GetUsers($Role);
     $this->load->view('add_edit_users_list',$data);
+  }
+
+  function fetchAttachments(){
+      $userId = $this->input->get('userId');
+      $data = $this->Booking_model->getAttachments($userId);
+      echo json_encode($data);
+  }
+  function downloadFile(){
+      $this->load->helper('download');
+      $filePath = $this->input->get('filePath');
+      $root_folder = $this->config->item('upload_file_path');
+      $fullFilePath = $root_folder.$filePath;
+      $data = file_get_contents($fullFilePath); // Read the file's contents
+      $name = explode('/', $filePath);
+      force_download($name[count($name)-1], $data);
+      exit;
   }
 
   function Add()

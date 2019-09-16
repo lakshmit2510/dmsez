@@ -26,6 +26,17 @@ class Booking_model extends CI_Model
     $this->db->where('BookingID', $id);
     $this->db->update('booking', $data);
   }
+  function  getAttachments($UserUID){
+	    $this->db->select ('booking.AttachedFiles');
+	    $this->db->from('booking');
+	    $this->db->where('CreatedBy',$UserUID);
+	    $this->db->where('AttachedFiles !=','');
+      $q = $this->db->get();
+      if($q->num_rows()>0)
+      {
+          return $q->result();
+      }
+  }
 
   function getBookingDetail($filter='')
   { 

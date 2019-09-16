@@ -524,3 +524,30 @@ $config['rewrite_short_tags'] = FALSE;
 | Array:		array('10.0.1.200', '192.168.5.0/24')
 */
 $config['proxy_ips'] = '';
+
+/*
+|--------------------------------------------------------------------------
+| Uploaded file path
+|--------------------------------------------------------------------------
+|
+| Common folder path for file uploads
+*/
+$config['upload_file_path'] = './uploads/';
+
+/*
+|--------------------------------------------------------------------------
+| Upload file extensions
+|--------------------------------------------------------------------------
+|
+| Default configuration for file extensions
+*/
+$config['upload_file_extensions'] = "gif|jpg|jpeg|png|iso|dmg|zip|rar|doc|docx|xls|xlsx|ppt|pptx|csv|ods|odt|odp|pdf|rtf|sxc|sxi|txt|exe|avi|mpeg|mp3|mp4|3gp";
+
+/*
+|--------------------------------------------------------------------------
+| Upload file Size
+|--------------------------------------------------------------------------
+|
+| Max file upload size
+*/
+$config['upload_file_size'] = "2048000"; // Can be set to particular file size , here it is 2 MB(2048 Kb)

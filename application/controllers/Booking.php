@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
 class Booking extends CI_Controller 
 {
 
@@ -120,13 +122,17 @@ class Booking extends CI_Controller
     $booked = $this->Booking_model->getMax();
     $checkin = $this->input->post('CheckInDate');
     $CheckOut = date('Y-m-d H:i', strtotime($checkin. ' +1 hour'));
-    
+    $fileUploaded = $this->upload_file('Booking',false,'upload_file');
+    if(count($fileUploaded) === 0){
+        return false;
+    }
     $data['BookingRefNo'] = 'SATS'.date('Y').str_pad($booked, 4, '0', STR_PAD_LEFT);
     // $data['UserType'] = $this->input->post('UserType');
     // $data['AreaUID'] = $this->input->post('Area');
     $data['CompanyUID'] = $this->input->post('DeliveryTo');
     $data['DriverName'] = $this->input->post('Driver');
     $data['VType'] = $this->input->post('VType');
+    $data['AttachedFiles'] = $fileUploaded['file_path'];
     $data['VNo'] = $this->input->post('VNumber');
     $data['PONumber'] = $this->input->post('PONumber');
     $data['DONumber'] = $this->input->post('DONumber');
@@ -182,7 +188,60 @@ class Booking extends CI_Controller
       $this->session->set_flashdata('type','error');
     } 
     redirect(base_url('Booking/Confirm/'.$data['BookingRefNo']));
-  } 
+  }
+    public function upload_file($sub_folder,$extensions,$name){
+        $uploadData = array();
+        if(!empty($_FILES[$name]['name'])){
+            $filesCount = count($_FILES[$name]);
+            $root_folder = $this->config->item('upload_file_path');
+            $root_extensions = $this->config->item('upload_file_extensions');
+            $root_file_size = $this->config->item('upload_file_size');
+//            $_FILES['upload_File']['name'] = $_FILES[$name]['name'];
+//            $_FILES['upload_File']['type'] = $_FILES[$name]['type'];
+//            $_FILES['upload_File']['tmp_name'] = $_FILES[$name]['tmp_name'];
+//            $_FILES['upload_File']['error'] = $_FILES[$name]['error'];
+//            $_FILES['upload_File']['size'] = $_FILES[$name]['size'];
+            $config = array(
+                'upload_path' => $root_folder.$sub_folder,
+                'allowed_types' => $extensions ? $extensions : $root_extensions,
+                'overwrite' => TRUE,
+                'remove_spaces'=> FALSE,
+                'max_size' => $root_file_size,
+            );
+            $this->load->library('upload', $config);
+//            $this->upload->initialize($config);
+            if($this->upload->do_upload($name)){
+                $fileData = $this->upload->data();
+                if($fileData){
+                    $uploadData['file_path'] = $sub_folder.'/'.$_FILES[$name]['name'];
+                }
+            }else{
+                $error = array('error' => $this->upload->display_errors());
+            }
+//            for($i = 0; $i < $filesCount; $i++){
+//                $_FILES['upload_File']['name'] = $_FILES[$name]['name'][$i];
+//                $_FILES['upload_File']['type'] = $_FILES[$name]['type'][$i];
+//                $_FILES['upload_File']['tmp_name'] = $_FILES[$name]['tmp_name'][$i];
+//                $_FILES['upload_File']['error'] = $_FILES[$name]['error'][$i];
+//                $_FILES['upload_File']['size'] = $_FILES[$name]['size'][$i];
+//                $config = array(
+//                    'upload_path' => $root_folder.$sub_folder,
+//                    'allowed_types' => $extensions ? $extensions : $root_extensions,
+//                    'overwrite' => TRUE,
+//                    'max_size' => $root_file_size,
+//                );
+//                $this->load->library('upload', $config);
+//                $this->upload->initialize($config);
+//                if($this->upload->do_upload('upload_File')){
+//                    $fileData = $this->upload->data();
+//                    if($fileData){
+//                        $uploadData[$i]['file_name'] = ['file_name'];
+//                    }
+//                }
+//            }
+        }
+        return $uploadData;
+    }
 
   function cancel($id)
   {
