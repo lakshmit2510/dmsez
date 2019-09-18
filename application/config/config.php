@@ -550,4 +550,4 @@ $config['upload_file_extensions'] = "gif|jpg|jpeg|png|iso|dmg|zip|rar|doc|docx|x
 |
 | Max file upload size
 */
-$config['upload_file_size'] = "2048000"; // Can be set to particular file size , here it is 2 MB(2048 Kb)
+$config['upload_file_size'] = "8048000"; // Can be set to particular file size , here it is 2 MB(2048 Kb)

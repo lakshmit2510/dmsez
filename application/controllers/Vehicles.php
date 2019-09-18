@@ -38,6 +38,7 @@ class Vehicles extends CI_Controller {
     {
         $data['VehicleNo'] = $this->input->post('VehicleNo');
         $data['VehicleTypeID'] = $this->input->post('Type');
+        $data['VehicleName'] = $this->input->post('VehicleName');
         $data['DriverName'] = $this->input->post('Driver');
         $data['DriverNumber'] = $this->input->post('DriverNo');
         $data['DriverNRIC'] = $this->input->post('NRIC');
@@ -64,6 +65,7 @@ class Vehicles extends CI_Controller {
         $vehicle_id = $this->input->post('vehicle_id');
         $vehicle = $this->Vehicle_model->getDataById($vehicle_id);
         $data['VehicleNo'] = $this->input->post('VehicleNo');
+        $data['VehicleName'] = $this->input->post('VehicleName');
         $data['VehicleTypeID'] = $this->input->post('Type');
         $data['DriverName'] = $this->input->post('Driver');
         $data['DriverNumber'] = $this->input->post('DriverNo');

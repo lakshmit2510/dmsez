@@ -123,9 +123,9 @@ class Booking extends CI_Controller
     $checkin = $this->input->post('CheckInDate');
     $CheckOut = date('Y-m-d H:i', strtotime($checkin. ' +1 hour'));
     $fileUploaded = $this->upload_file('Booking',false,'upload_file');
-    if(count($fileUploaded) === 0){
-        return false;
-    }
+//    if(count($fileUploaded) === 0){
+//        return false;
+//    }
     $data['BookingRefNo'] = 'SATS'.date('Y').str_pad($booked, 4, '0', STR_PAD_LEFT);
     // $data['UserType'] = $this->input->post('UserType');
     // $data['AreaUID'] = $this->input->post('Area');
