@@ -69,6 +69,7 @@
                         <th>Vehicle Number</th>
                         <th>Building Name</th> 
                         <th>Dock Number</th>
+                        <th>Security Name</th>
                         <th>Booked Date</th>
                         <th>Booked Time</th>
                         <th>Actual Check-In/Out Time</th>
@@ -100,6 +101,7 @@
                             <td>'.$row->VehicleNo.'</td>
                             <td>'.$row->BuildingName.'</td>
                             <td>'.$row->SlotName.'</td>
+                            <td><input type="text" value="SecurityName" name="Security Name"></td>
                             <td class="center">'.date('m/d/Y',strtotime($row->CheckIn)).'</td>
                             <td class="center">'.date('H:i',strtotime($row->CheckIn)).' - '.date('H:i',strtotime($row->CheckOut)).'</td> 
                             <td class="center" align="center">'.$CheckIn.' - '.$CheckOut.'</td>

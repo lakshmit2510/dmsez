@@ -1,8 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-//ini_set('display_errors', 1);
-//ini_set('display_startup_errors', 1);
-//error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 class Booking extends CI_Controller 
 {
 
@@ -20,6 +20,25 @@ class Booking extends CI_Controller
     $data['Page'] = 'Booking';
     $data['booking'] = $this->Booking_model->getBookingDetail();
     $this->load->view('list_booking',$data);
+  }
+
+  public function editBooking($Booking_id){
+      $data['Title'] = 'Edit Booking Details';
+      $data['Page'] = 'Booking';
+      $data['Booking_id'] = $Booking_id;
+      $data['vnumber'] = $this->Common_model->getVehcileNo();
+      $data['booking'] = $this->Booking_model->getBookingDetailID($Booking_id);
+      $this->load->view('edit_booking', $data);
+  }
+
+  public function editBookingPost($id){
+      if(empty($id)) { redirect($_SERVER['HTTP_REFERER']); };
+      $data['VType'] = $this->input->post('VType');
+      $data['VNo'] = $this->input->post('VNumber');
+      $data['DriverName'] = $this->input->post('Driver');
+      $this->Booking_model->updateBooking($data, $id);
+      $this->session->set_flashdata('done', 'Booking has been Updated Successfully');
+      redirect(base_url('Booking'));
   }
 
   public function Today()
