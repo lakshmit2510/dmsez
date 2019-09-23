@@ -101,7 +101,12 @@
                             <td>'.$row->VehicleNo.'</td>
                             <td>'.$row->BuildingName.'</td>
                             <td>'.$row->SlotName.'</td>
-                            <td><input type="text" value="SecurityName" name="Security Name"></td>
+                            <td>
+                                <select>
+                                      <option value="">--- Choose SecurityName ----</option>
+                                      <option value=""></option>
+                                  </select>
+                            </td>
                             <td class="center">'.date('m/d/Y',strtotime($row->CheckIn)).'</td>
                             <td class="center">'.date('H:i',strtotime($row->CheckIn)).' - '.date('H:i',strtotime($row->CheckOut)).'</td> 
                             <td class="center" align="center">'.$CheckIn.' - '.$CheckOut.'</td>

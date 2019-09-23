@@ -12,7 +12,7 @@ class Users extends CI_Controller
 	   $this->load->model('User_model');
 	   $this->load->model('Booking_model');
 	  if(!$this->session->userdata('is_loggin')){ redirect(base_url('Login')); }
-    if(!in_array($this->session->userdata('Role'),array(1,2,3))) { redirect(base_url()); }
+    if(!in_array($this->session->userdata('Role'),array(1,2,3,5))) { redirect(base_url()); }
 	}
 
   public function index()
@@ -79,7 +79,8 @@ class Users extends CI_Controller
 
   public function Security()
   {
-    if(!in_array($this->session->userdata('Role'), array(1,3))) { redirect('Dashboard'); exit; }
+
+    if(!in_array($this->session->userdata('Role'), array(1,3,5))) { redirect('Dashboard'); exit; }
     $data['Title'] = 'List of Security Check';
     $data['Page'] = 'list_security';  
     $data['Users'] = $this->User_model->GetUsers(5);
@@ -106,7 +107,7 @@ class Users extends CI_Controller
 
   function AddSecurity()
   {
-    if(!in_array($this->session->userdata('Role'), array(1,3))) { redirect('Dashboard'); exit; }
+    if(!in_array($this->session->userdata('Role'), array(1,3,5))) { redirect('Dashboard'); exit; }
     $data['Title'] = 'Add New Security Check';
     $data['Page'] = 'AddSecurity';  
     $data['company'] = $this->Common_model->getTableData('company','Active');
@@ -148,7 +149,7 @@ class Users extends CI_Controller
 
   function editSecurity($UserUID)
   {
-    if(!in_array($this->session->userdata('Role'), array(1,2,3))) { redirect('Dashboard'); exit; }
+    if(!in_array($this->session->userdata('Role'), array(1,2,3,5))) { redirect('Dashboard'); exit; }
     if(empty($UserUID)) { redirect(base_url('Dashboard')); }
     $data['Title'] = 'Edit Security Checker';
     $data['Page'] = 'listsecurity'; 
@@ -156,6 +157,13 @@ class Users extends CI_Controller
     $data['company'] = $this->Common_model->getTableData('company','Active');
     $this->load->view('Edit-security',$data);   
   }
+
+    function deleteSecurity($UserUID)
+    {
+        if(empty($UserUID)) { redirect(base_url('Dashboard')); }
+        $data['detail'] = $this->User_model->deleteUsersDetailsByUserID($UserUID);
+        echo json_encode(array("success"=>'ok',"message"=>"User Successfully Deleted."));
+    }
 
 	function editQc($UserUID)
 	{

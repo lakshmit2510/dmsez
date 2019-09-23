@@ -136,6 +136,12 @@ $bookingct = $this->Common_model->getMax('booking') - 1;
                   <li><a href="<?php echo base_url('Vehicles/update');?>">Update Vehicle Details</a></li>
                 </ul>
               </li>
+              <?php } if(in_array($this->session->userdata('Role'),array(5,6))){ ?>
+                  <li class="dropdown"><a href="#" data-toggle="dropdown" role="button" aria-expanded="false" class="dropdown-toggle"><i class="icon mdi mdi-account"></i> Admin <span class="mdi mdi-caret-down"></span></a>
+                      <ul role="menu" class="dropdown-menu">
+                          <li><a href="<?php echo base_url('Users/Security');?>">Update Security Details</a></li>
+                      </ul>
+                  </li>
               <?php } if(in_array($this->session->userdata('Role'),array(1,3))) { ?>
               <li <?php if($Page=='Reports') { echo 'class="c_active"';} ?>><a href="<?php echo base_url('Reports');?>"><i class="icon mdi mdi-widgets"></i>  <span>Statistics & Reports</span></a></li>
               <?php } else { ?>  

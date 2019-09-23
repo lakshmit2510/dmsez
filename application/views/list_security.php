@@ -42,6 +42,7 @@
                             <td>'.$row->UAN.'</td>
                             <td class="center">'.date('d/m/Y H:i',strtotime($row->CreatedOn)).'</td> 
                             <td class="center">
+                            <a href="javascript:void(0);" class="btn btn-space btn-danger delete-row" data-userId="'.$row->UserUID.'"><i class="icon icon-left mdi mdi-delete"></i> Delete</a>
                             <a href="javascript:void(0);" data-toggle="modal" data-target="#view'.$row->UserUID.'" class="btn btn-space btn-info"><i class="icon icon-left mdi mdi-eye"></i> View</a>
                             <a href="'.base_url('Users/editSecurity/'.$row->UserUID).'" class="btn btn-space btn-warning"><i class="icon icon-left mdi mdi-edit"></i> Edit</a>
                           </td>
@@ -131,6 +132,7 @@
     <script src="<?php echo base_url('assets/js/datatable.js');?>" type="text/javascript"></script>
     <script src="<?php echo base_url();?>assets/lib/datatables/js/dataTables.bootstrap.min.js" type="text/javascript"></script>
     <script src="<?php echo base_url();?>assets/lib/datatables/plugins/buttons/js/dataTables.buttons.js" type="text/javascript"></script>
+    <script src="<?php echo base_url()?>assets/lib/notify/notify.min.js" type="text/javascript"></script>
 
     <script type="text/javascript">
       $(document).ready(function(){
@@ -149,5 +151,39 @@
         });
 
         $('.buttons-html5').addClass('btn btn-default');
+
+          $('.delete-row').on('click',function(){
+              var table3 = $('#table3').DataTable();
+
+              $.ajax ({
+                  type:'POST',
+                  url:'<?php echo base_url();?>Users/deleteSecurity/'+$(this).attr('data-userId'),
+                  dataType: 'JSON',
+                  data: {},
+                  beforeSend: function() {
+                      // $('.be-loading').addClass('be-loading be-loading-active');
+
+                  },
+                  success:function(data) {
+                      if (data.success) {
+                          table3.row($(this).parents('tr')[0]).remove().draw(false);
+                          //$.notify(data.message, "success");
+
+                          $.notify({
+                              message: data.message,
+                          }, {
+                              element: 'body',
+                              type: "success",
+                              placement: {
+                                  from: "top",
+                                  align: "right"
+                              }
+                          });
+                      }
+                  }
+              });
+
+
+          });
       });
     </script>

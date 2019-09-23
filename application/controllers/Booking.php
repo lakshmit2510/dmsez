@@ -90,6 +90,7 @@ class Booking extends CI_Controller
     if($this->session->userdata('Role') <> 5) { redirect('Dashboard'); exit; }
     $data['Title'] = 'Security Check Booking'; 
     $data['Page'] = 'BookingList';
+    $data['Users'] = $this->User_model->GetUsers(5);
     $data['booking'] = $this->Booking_model->getBookingDetail('Security');
     $this->load->view('security_booking',$data);
   }
