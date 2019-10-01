@@ -1,8 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
 class Booking extends CI_Controller 
 {
 
@@ -93,6 +93,12 @@ class Booking extends CI_Controller
     $data['Users'] = $this->User_model->GetUsers(5);
     $data['booking'] = $this->Booking_model->getBookingDetail('Security');
     $this->load->view('security_booking',$data);
+  }
+
+  function updateRow(){
+      $data['SecurityUserUID'] =  $this->input->post('userUId');
+      $bookingId =  $this->input->post('bookingId');
+      $this->Booking_model->updateBooking($data, $bookingId);
   }
 
   public function QCcheck()
