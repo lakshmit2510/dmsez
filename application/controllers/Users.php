@@ -41,9 +41,20 @@ class Users extends CI_Controller
       $data['Title'] = 'Update Suppliers Information';
       $Role = 2;
     }
-    $data['Page'] = 'add_edit_users_list';  
+    $data['Page'] = 'add_edit_users_list';
+    $data['SupplierGroup'] = $this->Common_model->getSupplierGroupInfo();
     $data['Users'] = $this->User_model->GetUsers($Role);
     $this->load->view('add_edit_users_list',$data);
+  }
+
+  function updateUsersGroup(){
+      $selectedSuppliers = $this->input->post('selectedSuppliers');
+      $selectedGroup =  $this->input->post('selectedGroup');
+      foreach ($selectedSuppliers as $value) {
+      $data['SupplierGroupID'] =  $selectedGroup;
+      $this->User_model->updateSupplierGroup($data, $value);
+        }
+      echo json_encode(array("success"=>'ok',"message"=>"Supplier Group Successfully Updated."));
   }
 
   function fetchAttachments(){

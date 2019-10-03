@@ -38,6 +38,14 @@ class Common_model extends CI_Model
     return $this->db->get('vehicle')->row();
   }
 
+  function getSupplierGroupInfo()
+  {
+
+    $this->db->select('*');
+    //$this->db->where('ID', );
+    return $this->db->get('suppliergroup')->result();
+  }
+
   function getVehicleInfo($vno)
   {
 

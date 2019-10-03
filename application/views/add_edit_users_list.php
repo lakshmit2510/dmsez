@@ -1,4 +1,5 @@
 <?php $this->load->view('template/header'); ?>
+
 <style>
     .document-list{
         min-height: 50px;
@@ -102,6 +103,7 @@
                 <div class="panel-heading panel-heading-divider"><?PHP echo $Title;?></div>
                 <div class="panel-body">
                   <div class="text-right">
+                    <button type="button" class="btn btn-space btn-success" data-toggle="modal" data-target="#supplier-group-modal">Assign Group</button>
                     <a href="<?php echo base_url('Users/Add')?>" class="btn btn-space btn-success"> Add Record</a>
                   </div>
                   <table id="table3" class="table table-striped table-hover table-fw-widget">
@@ -113,6 +115,7 @@
                         <th>Vehicle Type</th>
                         <th>Vehicle No</th>
                         <th>ACRA / UN</th>
+                        <th>SupplierGroup</th>
                         <th>CreateOn</th>
                         <th width="140">Action</th>
                       </tr>
@@ -138,6 +141,7 @@
                             <td>'.$row->Type.'</td>
                             <td>'.$row->VNo.'</td>
                             <td>'.$row->UAN.'</td>
+                            <td>'.$row->SupplierGroup.'</td>
                             <td class="center">'.date('d/m/Y H:i',strtotime($row->CreatedOn)).'</td> 
                             <td class="center">
                             <a href="javascript:void(0);" data-toggle="modal" data-target="#view'.$row->UserUID.'" data-userId="'.$row->UserUID.'" class="btn btn-space btn-info view-btn"><i class="icon icon-left mdi mdi-eye"></i> View</a>
@@ -254,15 +258,16 @@
               </div>
             </div>
           </div>
+
     <?php $this->load->view('template/footer'); ?>
     <script src="<?php echo base_url();?>assets/lib/datatables/js/jquery.dataTables.min.js" type="text/javascript"></script>
     <script src="<?php echo base_url('assets/js/datatable.js');?>" type="text/javascript"></script>
     <script src="<?php echo base_url();?>assets/lib/datatables/js/dataTables.bootstrap.min.js" type="text/javascript"></script>
     <script src="<?php echo base_url();?>assets/lib/datatables/plugins/buttons/js/dataTables.buttons.js" type="text/javascript"></script>
-
+    <?php $this->load->view('add_supplier_group'); ?>
     <script type="text/javascript">
       $(document).ready(function(){
-        
+
         $("#table3").dataTable({
           buttons:["copy", 
           {
@@ -306,5 +311,24 @@
 
             });
         });
+
+          // Supplier Group Assign
+          $('.supplier-group').on('change',function(evt){
+              var userUId = $(this).attr('data-users-id');
+              var groupId = $(this).val();
+              $.ajax({
+                  type: 'POST',
+                  url: '<?php echo base_url('Users/updateUsersGroup/')?>',
+                  dataType: 'JSON',
+                  data: {groupId: groupId, userUId: userUId},
+                  success: function(data)
+                  {
+                      console.log(data);
+                  },
+                  error: function() {
+
+                  }
+              });
+          });
       });
     </script>

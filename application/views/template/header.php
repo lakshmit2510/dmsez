@@ -129,6 +129,7 @@ $bookingct = $this->Common_model->getMax('booking') - 1;
                   <li><a href="<?php echo base_url('Users/Security');?>">Update Security Details</a></li>
                   <li><a href="<?php echo base_url('Users/QC');?>">Update QC Details</a></li>
                   <li><a href="<?php echo base_url('Users/Approval');?>">Approvals Pending</a></li>
+                  <li><a href="<?php echo base_url('');?>">Supplier Groups List</a></li>
                   <?php } ?>
                   <?php if($this->session->userdata('Role') == 2) { ?>
                   <!-- <li><a href="<?php echo base_url('Users/update');?>">Update Subcontractors Details</a></li>  -->

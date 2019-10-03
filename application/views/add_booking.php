@@ -261,6 +261,27 @@ h3.docleg > span::before{
                     </div>
                     <div data-step="2" class="step-pane">
                         <div class="form-group">
+                            <label class="col-sm-3 control-label">Docks Type <span style="color: #ff0000">*</span></label>
+                            <div class="col-sm-3">
+                                <select class="form-control" required="true" data-parsley-trigger="keyup" name="SlotType" id="SlotType">
+                                    <option value="">--- Choose Docks Type ----</option>
+                                    <?php
+                                    foreach ($slottype as $key => $value)
+                                    {
+                                        if(!in_array($this->session->userdata('Role'), array(1,3))) {
+                                            if($value->Type == 'Parking') { continue; }
+                                        }
+                                        echo '<option value="'.$value->STypeID.'">'.$value->Type.'</option>';
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="hidden" id="SlotNos" name="SlotNos" value="1">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                           <label class="col-sm-3 control-label">Chech-In & Check-Out Time <span style="color: #ff0000">*</span></label>
                           <div class="col-sm-3">
                             <div data-start-view="2" data-date-format="yyyy-mm-dd hh:00" class="input-group date checkintime">
@@ -290,26 +311,7 @@ h3.docleg > span::before{
                           </select>   
                         </div>
                       </div>
-                      <div class="form-group">
-                        <label class="col-sm-3 control-label">Docks Type <span style="color: #ff0000">*</span></label>
-                        <div class="col-sm-3">
-                          <select class="form-control" required="true" data-parsley-trigger="keyup" name="SlotType" id="SlotType">
-                            <option value="">--- Choose Docks Type ----</option>
-                            <?php 
-                            foreach ($slottype as $key => $value) 
-                            {
-                              if(!in_array($this->session->userdata('Role'), array(1,3))) {                                   
-                                if($value->Type == 'Parking') { continue; }
-                              }
-                              echo '<option value="'.$value->STypeID.'">'.$value->Type.'</option>';
-                            }
-                            ?>
-                          </select>
-                        </div>
-                        <div class="col-sm-3">
-                          <input type="hidden" id="SlotNos" name="SlotNos" value="1">
-                        </div>
-                      </div>
+
                       <div class="form-group">
                         <div class="col-sm-offset-5 col-sm-10" style="padding: 15px 0;">
                           <button data-wizard="#wizard1" class="btn btn-default btn-space wizard-previous">Previous</button>
@@ -346,6 +348,8 @@ h3.docleg > span::before{
     <script src="<?php echo base_url();?>assets/lib/bootstrap-slider/js/bootstrap-slider.js" type="text/javascript"></script>
     <script src="<?php echo base_url();?>assets/lib/parsley/parsley.min.js" type="text/javascript"></script>
     <script src="<?php echo base_url();?>assets/lib/jquery.gritter/js/jquery.gritter.js" type="text/javascript"></script>
+<!--    <script src="-->--><?php ////echo base_url();?><!--<!--assets/lib/daterangepicker/js/daterangepicker.js" type="text/javascript"></script>-->-->
+    <script src="<?php echo base_url();?>assets/lib/bootstrap-datetimepicker-multiple.min.js" type="text/javascript"></script>
     <script type="text/javascript">
       $(document).ready(function(){ 
         $('form').parsley();
@@ -383,8 +387,10 @@ h3.docleg > span::before{
         var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
         $(".checkintime").datetimepicker({
           startDate: new Date(),
+          //endDate: new Date(date.getTime()+30*24*3600*1000),
           minTime: 0,
           minView : 1,
+          multiple:true,
           autoclose:!0,
           pickSeconds: false,
           componentIcon:".mdi.mdi-calendar",

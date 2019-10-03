@@ -214,7 +214,7 @@
                   data: {userUId: userUId, bookingId: bookingId},
                   success: function(data)
                   {
-                      console.log(data);
+                      //console.log(data);
                   },
                   error: function() {
 
