@@ -284,7 +284,7 @@ h3.docleg > span::before{
                         <div class="form-group">
                           <label class="col-sm-3 control-label">Chech-In & Check-Out Time <span style="color: #ff0000">*</span></label>
                           <div class="col-sm-3">
-                            <div data-start-view="2" data-date-format="yyyy-mm-dd hh:00" class="input-group date checkintime">
+                            <div data-start-view="2" data-multiple= "true" data-date-hour-disabled="<?php echo $supplierGroupInfo[0]->DisableHours; ?>" data-date-format="yyyy-mm-dd hh:00" class="input-group date checkintime">
                               <input size="16" readonly="true" required="true" data-parsley-trigger="keyup" type="text" id="CheckIn" name="CheckInDate" placeholder="Check-In Time" class="form-control"><span class="input-group-addon btn btn-primary"><i class="icon-th mdi mdi-calendar"></i></span>
                             </div>
                           </div>
@@ -349,7 +349,7 @@ h3.docleg > span::before{
     <script src="<?php echo base_url();?>assets/lib/parsley/parsley.min.js" type="text/javascript"></script>
     <script src="<?php echo base_url();?>assets/lib/jquery.gritter/js/jquery.gritter.js" type="text/javascript"></script>
 <!--    <script src="-->--><?php ////echo base_url();?><!--<!--assets/lib/daterangepicker/js/daterangepicker.js" type="text/javascript"></script>-->-->
-    <script src="<?php echo base_url();?>assets/lib/bootstrap-datetimepicker-multiple.min.js" type="text/javascript"></script>
+<!--    <script src="--><?php //echo base_url();?><!--assets/lib/bootstrap-datetimepicker-multiple.min.js" type="text/javascript"></script>-->
     <script type="text/javascript">
       $(document).ready(function(){ 
         $('form').parsley();
@@ -390,7 +390,7 @@ h3.docleg > span::before{
           //endDate: new Date(date.getTime()+30*24*3600*1000),
           minTime: 0,
           minView : 1,
-          multiple:true,
+          multiple: true,
           autoclose:!0,
           pickSeconds: false,
           componentIcon:".mdi.mdi-calendar",
@@ -401,6 +401,7 @@ h3.docleg > span::before{
         }).on('change',function(event, date) {
           checkin = event.delegateTarget.childNodes[1].value;
           timestamp = new Date(checkin);
+
           var chkdate = moment(timestamp).format("YYYY-MM-DD HH:mm");
 
           chkdate = new Date(chkdate);

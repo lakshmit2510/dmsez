@@ -131,6 +131,7 @@ class Booking extends CI_Controller
     $data['company'] = $this->Common_model->getTableData('company','Active');
     $data['mode'] = $this->Common_model->getTableData('bookingmode','Active');
     $data['area'] = $this->Common_model->getTableData('area','Active');
+    $data['supplierGroupInfo'] = $this->Common_model->getSupplierGroupInfo($this->session->userdata('SupplierGroupID'));
     $this->load->view('add_booking',$data);
   }
 
@@ -441,7 +442,8 @@ class Booking extends CI_Controller
 
     $CheckIn = date('Y-m-d H:i', strtotime($this->input->post('CheckIn')));
     $CheckOut = date('Y-m-d H:i', strtotime($CheckIn. ' +1 hour'));
-
+//echo $CheckIn;
+//exit;
     if(empty($type)) { echo ''; exit(); }
     $getslot = $this->Booking_model->getSlots($type);
     $booked = $this->Booking_model->bookedSlot($type, $CheckIn, $CheckOut);

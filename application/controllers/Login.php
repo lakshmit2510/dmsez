@@ -130,6 +130,7 @@ class Login extends CI_Controller
 	   	 $this->session->set_userdata(array(
 	   	 	'UserUID'=>$row->UserUID,
 	   	 	'UserName'=>$row->UserName,
+             'SupplierGroupID'=>$row->SupplierGroupID,
         'Role'=>$row->Role,
         'UserType'=>$row->UserType,
 	   	 	'FullName'=>$row->Name,

@@ -42,7 +42,7 @@ class Users extends CI_Controller
       $Role = 2;
     }
     $data['Page'] = 'add_edit_users_list';
-    $data['SupplierGroup'] = $this->Common_model->getSupplierGroupInfo();
+    $data['SupplierGroup'] = $this->Common_model->getSupplierGroupdetails();
     $data['Users'] = $this->User_model->GetUsers($Role);
     $this->load->view('add_edit_users_list',$data);
   }

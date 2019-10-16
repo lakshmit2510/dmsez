@@ -20,7 +20,7 @@
                 </div>
                 <div style="margin-left: 10px;">
                     <select class="supplier-group" data-users-id="'.$row->UserUID.'" name="SupplierGroup">
-                        <option value="">-- ChooseSupplierClass --</option>
+                        <option value="">-- ChooseSupplierGroup --</option>
                         <?php
                             foreach ($SupplierGroup as $key => $value) {
                                 echo '<option value="' . $value->GroupID . '">' . $value->SupplierGroup . '</option>';
@@ -80,20 +80,33 @@
         $('#assign-btn').on('click',function(){
             var selectedSuppliers = $('#custom-headers').val();
             var selectedGroup = $('.supplier-group').val();
-            $.ajax({
-                type: 'POST',
-                url: '<?php echo base_url('Users/updateUsersGroup/')?>',
-                dataType: 'JSON',
-                data: {selectedSuppliers: selectedSuppliers, selectedGroup: selectedGroup},
-                success: function(data)
-                {
-                    location.reload();
-                },
-                error: function() {
 
-                }
-            });
+            if (selectedGroup.length == 0 && selectedSuppliers == null){
+                alert('Please Select Suppliers and Supplier Group');
+            }
+            else if (selectedGroup.length == 0) {
+                alert('Please Select the Supplier Group');
+
+            }else if(selectedSuppliers == null) {
+                alert('Please Select the Supplier to Assign Group');
+
+            }else {
+                $.ajax({
+                    type: 'POST',
+                    url: '<?php echo base_url('Users/updateUsersGroup/')?>',
+                    dataType: 'JSON',
+                    data: {selectedSuppliers: selectedSuppliers, selectedGroup: selectedGroup},
+                    success: function (data) {
+                         location.reload();
+                         alert(data.message);
+                    },
+                    error: function () {
+
+                    }
+                });
+            }
         });
+
     });
 
 </script>

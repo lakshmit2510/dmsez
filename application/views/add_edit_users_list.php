@@ -312,23 +312,23 @@
             });
         });
 
-          // Supplier Group Assign
-          $('.supplier-group').on('change',function(evt){
-              var userUId = $(this).attr('data-users-id');
-              var groupId = $(this).val();
-              $.ajax({
-                  type: 'POST',
-                  url: '<?php echo base_url('Users/updateUsersGroup/')?>',
-                  dataType: 'JSON',
-                  data: {groupId: groupId, userUId: userUId},
-                  success: function(data)
-                  {
-                      console.log(data);
-                  },
-                  error: function() {
-
-                  }
-              });
-          });
+          //// Supplier Group Assign
+          //$('.supplier-group').on('change',function(evt){
+          //    var userUId = $(this).attr('data-users-id');
+          //    var groupId = $(this).val();
+          //    $.ajax({
+          //        type: 'POST',
+          //        url: '<?php //echo base_url('Users/updateUsersGroup/')?>//',
+          //        dataType: 'JSON',
+          //        data: {groupId: groupId, userUId: userUId},
+          //        success: function(data)
+          //        {
+          //            console.log(data);
+          //        },
+          //        error: function() {
+          //
+          //        }
+          //    });
+          //});
       });
     </script>

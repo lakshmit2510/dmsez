@@ -31,6 +31,8 @@ class Common_model extends CI_Model
     return $this->db->get('vehicle')->result();
   }
 
+
+
   function getDriverInfo($id)
   {
     $this->db->select('*');
@@ -38,11 +40,21 @@ class Common_model extends CI_Model
     return $this->db->get('vehicle')->row();
   }
 
-  function getSupplierGroupInfo()
+  function getSupplierGroupInfo($SupplierGroupID)
   {
 
     $this->db->select('*');
-    //$this->db->where('ID', );
+
+    if($SupplierGroupID){
+        $this->db->where('GroupID', $SupplierGroupID);
+    }
+
+    return $this->db->get('suppliergroup')->result();
+  }
+
+  function getSupplierGroupdetails()
+  {
+    $this->db->select('*');
     return $this->db->get('suppliergroup')->result();
   }
 
