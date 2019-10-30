@@ -96,8 +96,9 @@ $bookingct = $this->Common_model->getMax('booking') - 1;
               <?php if($this->session->userdata('Role') == 5) { ?>
               <li><a href="<?php echo base_url('Booking/Security');?>"><i class="icon mdi mdi-shield-security"></i> Security Check</a></li>
               <?php } if($this->session->userdata('Role') == 6) { ?>
+                  <li><a href="<?php echo base_url('Booking/warehouseCheck');?>"><i class="icon mdi mdi-shield-check"></i> Warehouse Checking</a></li>
               <li><a href="<?php echo base_url('Booking/QcCheck');?>"><i class="icon mdi mdi-shield-check"></i> QC Checking</a></li>
-              <?php } if(in_array($this->session->userdata('Role'), array(1,2,3,4))){  ?>
+              <?php }  if(in_array($this->session->userdata('Role'), array(1,2,3,4))){  ?>
               <li class="dropdown"><a href="#" data-toggle="dropdown" role="button" aria-expanded="false" class="dropdown-toggle"><i class="icon mdi mdi-account"></i> Dashboard <span class="mdi mdi-caret-down"></span></a>
                 <ul role="menu" class="dropdown-menu">
                   <?php if(!in_array($this->session->userdata('Role'), array(5,6))) { ?>
@@ -137,7 +138,7 @@ $bookingct = $this->Common_model->getMax('booking') - 1;
                   <li><a href="<?php echo base_url('Vehicles/update');?>">Update Vehicle Details</a></li>
                 </ul>
               </li>
-              <?php } if(in_array($this->session->userdata('Role'),array(5,6))){ ?>
+              <?php } if(in_array($this->session->userdata('Role'),array(5))){ ?>
                   <li class="dropdown"><a href="#" data-toggle="dropdown" role="button" aria-expanded="false" class="dropdown-toggle"><i class="icon mdi mdi-account"></i> Admin <span class="mdi mdi-caret-down"></span></a>
                       <ul role="menu" class="dropdown-menu">
                           <li><a href="<?php echo base_url('Users/Security');?>">Update Security Details</a></li>

@@ -67,9 +67,11 @@ class Booking_model extends CI_Model
        $this->db->where('status',1);
        $this->db->where('booking.CheckIn <',date('Y-m-d H:i:s'));
      } else if($filter == 'Security') { 
-       $this->db->where_in('status',array(1,2),FALSE);
+       $this->db->where_in('status',array(1,2,4,5),FALSE);
      } else if($filter == 'QC') { 
-       $this->db->where('status',2);
+       $this->db->where('status',6);
+     } else if($filter == 'Warehouse') {
+         $this->db->where('status',2);
      } else if($filter == 'RealTime') {
        $this->db->where('DATE(booking.CheckIn)',date('Y-m-d'));
        $this->db->where_not_in('status',array(3,6),FALSE);

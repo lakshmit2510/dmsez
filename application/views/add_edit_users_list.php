@@ -265,6 +265,7 @@
     <script src="<?php echo base_url();?>assets/lib/datatables/js/dataTables.bootstrap.min.js" type="text/javascript"></script>
     <script src="<?php echo base_url();?>assets/lib/datatables/plugins/buttons/js/dataTables.buttons.js" type="text/javascript"></script>
     <?php $this->load->view('add_supplier_group'); ?>
+
     <script type="text/javascript">
       $(document).ready(function(){
 
@@ -312,23 +313,5 @@
             });
         });
 
-          //// Supplier Group Assign
-          //$('.supplier-group').on('change',function(evt){
-          //    var userUId = $(this).attr('data-users-id');
-          //    var groupId = $(this).val();
-          //    $.ajax({
-          //        type: 'POST',
-          //        url: '<?php //echo base_url('Users/updateUsersGroup/')?>//',
-          //        dataType: 'JSON',
-          //        data: {groupId: groupId, userUId: userUId},
-          //        success: function(data)
-          //        {
-          //            console.log(data);
-          //        },
-          //        error: function() {
-          //
-          //        }
-          //    });
-          //});
       });
     </script>

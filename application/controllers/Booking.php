@@ -1,8 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-//ini_set('display_errors', 1);
-//ini_set('display_startup_errors', 1);
-//error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 class Booking extends CI_Controller 
 {
 
@@ -104,11 +104,20 @@ class Booking extends CI_Controller
   public function QCcheck()
   {
     if($this->session->userdata('Role') <> 6) { redirect('Dashboard'); exit; }
-    $data['Title'] = 'Checked-In Booking'; 
+    $data['Title'] = 'Warehouse Checked-In Booking';
     $data['Page'] = 'Today';
     $data['booking'] = $this->Booking_model->getBookingDetail('QC');
     $this->load->view('qc_booking',$data);
   }
+
+    public function warehouseCheck()
+    {
+        if($this->session->userdata('Role') <> 6) { redirect('Dashboard'); exit; }
+        $data['Title'] = 'Checked-In Booking';
+        $data['Page'] = 'Today';
+        $data['booking'] = $this->Booking_model->getBookingDetail('Warehouse');
+        $this->load->view('warehouse_booking',$data);
+    }
 
   public function Realtime()
   {
@@ -245,27 +254,6 @@ class Booking extends CI_Controller
             }else{
                 $error = array('error' => $this->upload->display_errors());
             }
-//            for($i = 0; $i < $filesCount; $i++){
-//                $_FILES['upload_File']['name'] = $_FILES[$name]['name'][$i];
-//                $_FILES['upload_File']['type'] = $_FILES[$name]['type'][$i];
-//                $_FILES['upload_File']['tmp_name'] = $_FILES[$name]['tmp_name'][$i];
-//                $_FILES['upload_File']['error'] = $_FILES[$name]['error'][$i];
-//                $_FILES['upload_File']['size'] = $_FILES[$name]['size'][$i];
-//                $config = array(
-//                    'upload_path' => $root_folder.$sub_folder,
-//                    'allowed_types' => $extensions ? $extensions : $root_extensions,
-//                    'overwrite' => TRUE,
-//                    'max_size' => $root_file_size,
-//                );
-//                $this->load->library('upload', $config);
-//                $this->upload->initialize($config);
-//                if($this->upload->do_upload('upload_File')){
-//                    $fileData = $this->upload->data();
-//                    if($fileData){
-//                        $uploadData[$i]['file_name'] = ['file_name'];
-//                    }
-//                }
-//            }
         }
         return $uploadData;
     }
@@ -327,6 +315,44 @@ class Booking extends CI_Controller
     $this->session->set_flashdata('done', 'Booking has been Checked-Out Successfully');
     redirect($_SERVER['HTTP_REFERER']);   
   }
+
+    function warehouseCheckIn($id)
+    {
+        if(empty($id)) { redirect($_SERVER['HTTP_REFERER']); };
+
+        $book = $this->Booking_model->getBookingDetailID($id);
+        $now = date('Y-m-d H:i:s');
+        $datetime1 = strtotime($book->CheckIn);
+        $datetime2 = strtotime($now);
+        if($now > $book->CheckIn) // Late CheckIn
+        {
+            $interval  = $datetime2 - $datetime1;
+            $minutes   = round($interval / 60);
+            if($minutes > 15)
+            {
+                $this->session->set_flashdata('ErrorCheckIn',1);
+                $this->session->set_flashdata('MsgCheckIn','<b style="color:red">"LATE ARRIVAL"</b> REFER TO SATS PURCHASING.');
+                redirect($_SERVER['HTTP_REFERER']);
+                exit;
+            }
+        }
+
+        $data['WarehouseCheckIn'] = date('Y-m-d H:i:s');
+        $data['status'] = 2;
+        $cancel = $this->Booking_model->updateBooking($data, $id);
+        $this->session->set_flashdata('done', 'Booking has been Checked-In Successfully');
+        redirect($_SERVER['HTTP_REFERER']);
+    }
+
+    function warehouseCheckOut($id)
+    {
+        if(empty($id)) { redirect($_SERVER['HTTP_REFERER']); };
+        $data['WarehouseCheckOut'] = date('Y-m-d H:i:s');
+        $data['status'] = 3;
+        $cancel = $this->Booking_model->updateBooking($data, $id);
+        $this->session->set_flashdata('done', 'Booking has been Checked-Out Successfully');
+        redirect($_SERVER['HTTP_REFERER']);
+    }
 
   function QCApprove($id)
   {
