@@ -185,8 +185,8 @@ class Booking extends CI_Controller
     $data['CreatedBy'] = $this->session->userdata('UserUID');
     $data['status'] = 1;
     $slot = $this->input->post('Docks');
-  
-
+    // $vehicleDetails = $this->Booking_model->getVehicleDetailsById($data['VNo']);
+    // $params['data'] = 'Job Order No : '.$data['BookingRefNo'].', VehicleNo: '.$vehicleDetails->VehicleNo;
     $params['data'] = 'Job Order No : '.$data['BookingRefNo'];
     $params['level'] = 'H';
     $params['size'] = 10;
@@ -232,11 +232,6 @@ class Booking extends CI_Controller
             $root_folder = $this->config->item('upload_file_path');
             $root_extensions = $this->config->item('upload_file_extensions');
             $root_file_size = $this->config->item('upload_file_size');
-//            $_FILES['upload_File']['name'] = $_FILES[$name]['name'];
-//            $_FILES['upload_File']['type'] = $_FILES[$name]['type'];
-//            $_FILES['upload_File']['tmp_name'] = $_FILES[$name]['tmp_name'];
-//            $_FILES['upload_File']['error'] = $_FILES[$name]['error'];
-//            $_FILES['upload_File']['size'] = $_FILES[$name]['size'];
             $config = array(
                 'upload_path' => $root_folder.$sub_folder,
                 'allowed_types' => $extensions ? $extensions : $root_extensions,
@@ -245,7 +240,6 @@ class Booking extends CI_Controller
                 'max_size' => $root_file_size,
             );
             $this->load->library('upload', $config);
-//            $this->upload->initialize($config);
             if($this->upload->do_upload($name)){
                 $fileData = $this->upload->data();
                 if($fileData){
@@ -322,25 +316,25 @@ class Booking extends CI_Controller
 
         $book = $this->Booking_model->getBookingDetailID($id);
         $now = date('Y-m-d H:i:s');
-        $datetime1 = strtotime($book->CheckIn);
+        $datetime1 = strtotime($book->ActualCheckIn);
         $datetime2 = strtotime($now);
-        if($now > $book->CheckIn) // Late CheckIn
-        {
-            $interval  = $datetime2 - $datetime1;
-            $minutes   = round($interval / 60);
-            if($minutes > 15)
-            {
-                $this->session->set_flashdata('ErrorCheckIn',1);
-                $this->session->set_flashdata('MsgCheckIn','<b style="color:red">"LATE ARRIVAL"</b> REFER TO SATS PURCHASING.');
-                redirect($_SERVER['HTTP_REFERER']);
-                exit;
-            }
-        }
+        // if($now > $book->ActualCheckIn) // Late CheckIn
+        // {
+        //     $interval  = $datetime2 - $datetime1;
+        //     $minutes   = round($interval / 60);
+        //     if($minutes > 15)
+        //     {
+        //         $this->session->set_flashdata('ErrorCheckIn',1);
+        //         $this->session->set_flashdata('MsgCheckIn','<b style="color:red">"LATE ARRIVAL"</b> REFER TO SATS PURCHASING.');
+        //         redirect($_SERVER['HTTP_REFERER']);
+        //         exit;
+        //     }
+        // }
 
         $data['WarehouseCheckIn'] = date('Y-m-d H:i:s');
-        $data['status'] = 2;
+        $data['status'] = 6;
         $cancel = $this->Booking_model->updateBooking($data, $id);
-        $this->session->set_flashdata('done', 'Booking has been Checked-In Successfully');
+        $this->session->set_flashdata('done', 'Booking has been Checked-In to W/H Successfully');
         redirect($_SERVER['HTTP_REFERER']);
     }
 
@@ -348,7 +342,7 @@ class Booking extends CI_Controller
     {
         if(empty($id)) { redirect($_SERVER['HTTP_REFERER']); };
         $data['WarehouseCheckOut'] = date('Y-m-d H:i:s');
-        $data['status'] = 3;
+        $data['status'] = 7;
         $cancel = $this->Booking_model->updateBooking($data, $id);
         $this->session->set_flashdata('done', 'Booking has been Checked-Out Successfully');
         redirect($_SERVER['HTTP_REFERER']);
@@ -424,6 +418,60 @@ class Booking extends CI_Controller
         $data['status'] = 3;
         $this->Booking_model->updateBooking($data, $detail->BookingID);
         $msg = array('error'=>0,'status'=>3); 
+      } else {
+        $msg = array('error'=>1);
+      }
+      echo json_encode($msg);
+    } else {
+      echo json_encode(array('error'=>1));
+    }
+  }
+
+  function warehouseQRCheck()
+  {
+    $RefNo = $this->input->post('RefNo');
+    $detail = $this->Booking_model->getBookingDetailID($RefNo,'RefNo');
+    if(is_object($detail))
+    {
+      if(empty($detail->WarehouseCheckIn) || $detail->WarehouseCheckIn == NULL)
+      {
+        $now = date('Y-m-d H:i:s');
+        $datetime1 = strtotime($detail->CheckIn);
+        $datetime2 = strtotime($now);
+        if($now > $detail->CheckIn) // Late CheckIn
+        {
+          $interval  = $datetime2 - $datetime1;
+          $minutes   = round($interval / 60);
+          if($minutes > 15)
+          {
+            $msg = array('error'=>100,'Msg'=>'<b style="color:red">"LATE ARRIVAL"</b>&nbsp;&nbsp;REFER TO SATS PURCHASING. The Job Order No : <b>'.$RefNo.'</b>');
+            echo json_encode($msg);
+            exit;
+          }
+        }
+        $data['WarehouseCheckIn'] = $now;
+        $data['status'] = 6;
+        $this->Booking_model->updateBooking($data, $detail->BookingID);
+        $msg = array('error'=>0,'status'=>6);
+        $this->session->set_flashdata('done', 'Booking has been Checked-In to W/H Successfully');
+      } else if((!empty($detail->WarehouseCheckIn) || !$detail->WarehouseCheckIn == NULL) && empty($detail->WarehouseCheckOut) || $detail->WarehouseCheckOut == NULL) 
+      {
+        $now = date('Y-m-d H:i:s');
+        $datetime1 = strtotime($now);
+        $datetime2 = strtotime($detail->WarehouseCheckIn);
+        $interval  = $datetime1 - $datetime2;
+        $minutes   = round($interval / 60);
+        if($minutes < 10) // Eairly CheckOut
+        {
+          $msg = array('error'=>100,'Msg'=>'<b style="color:red">"TOO EARLIY CHECKOUT"</b> PLEASE JOIN THE QUEUE LATER. The Job Order No : <b>'.$RefNo.'</b>');
+          echo json_encode($msg);
+          exit;
+        }
+        $data['WarehouseCheckOut'] = date('Y-m-d H:i:s');
+        $data['status'] = 7;
+        $this->Booking_model->updateBooking($data, $detail->BookingID);
+        $msg = array('error'=>0,'status'=>7); 
+        $this->session->set_flashdata('done', 'Booking has been Checked-Out from W/H Successfully');
       } else {
         $msg = array('error'=>1);
       }

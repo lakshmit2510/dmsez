@@ -246,7 +246,10 @@
           endChar: [13],
           onComplete: function(barcode, qty){
            validScan = true;
-           qrvalue = /:(.+)/.exec(barcode)[1];
+          //  var paramArr = barcode.split(',');
+          //  var vehicleNo = /:(.+)/.exec(paramArr[1])[1];
+          qrvalue = /:(.+)/.exec(barcode)[1];
+          // qrvalue = /:(.+)/.exec(paramArr[0])[1];
            jobno = $.trim(qrvalue);
            $('.qrscanned_val').val(jobno);
            $('#qrscan-info').niftyModal('show');
@@ -272,12 +275,15 @@
              if(data.error == 0)
              {
                $('#qrscan-success').niftyModal('show');
-               setTimeout(function(){ window.location.href = "<?php echo base_url('Booking/Verified/')?>"+qrcode+'/'+data.status;},2500);
+               setTimeout(function(){ 
+                //  window.location.href = "<?php //echo base_url('Booking/Verified/')?>"+qrcode+'/'+data.status;
+                window.location.href = "<?php echo base_url('Booking/Verified/')?>"+qrcode+'/'+data.status;
+                },2500);
              } else if(data.error == 100) {
                $('.alert-warning').hide();     
                $('#Noticebox').show();     
                $('#Noticemsg').html('');     
-               $('#Noticemsg').html(data.Msg);     
+                $('#Noticemsg').html(data.Msg);     
              } else {
                $('#qrscan-error').niftyModal('show');
              }
