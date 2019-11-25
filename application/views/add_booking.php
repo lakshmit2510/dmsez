@@ -268,10 +268,16 @@ h3.docleg > span::before{
                                     <?php
                                     foreach ($slottype as $key => $value)
                                     {
-                                        if(!in_array($this->session->userdata('Role'), array(1,3))) {
-                                            if($value->Type == 'Parking') { continue; }
+                                      if(!in_array($this->session->userdata('Role'), array(1,3))) {
+                                          if($value->Type == 'Parking') { continue; }
+                                      }
+                                      if(count($supplierGroupInfo)!=0){
+                                        if($supplierGroupInfo[0]->DockTypeID===$value->STypeID){
+                                          echo '<option selected value="'.$value->STypeID.'">'.$value->Type.'</option>';
                                         }
+                                      }else{
                                         echo '<option value="'.$value->STypeID.'">'.$value->Type.'</option>';
+                                      }
                                     }
                                     ?>
                                 </select>
@@ -280,11 +286,24 @@ h3.docleg > span::before{
                                 <input type="hidden" id="SlotNos" name="SlotNos" value="1">
                             </div>
                         </div>
+                        <?php
+                        $disabledHours = [];
+                        $x = 0;
+                        if(count($supplierGroupInfo)!=0){
+                          while($x <= 24) {
+                            $availableTimings = explode(',', $supplierGroupInfo[0]->AvailableTimings);
 
+                            if(count($availableTimings) > 0 && !in_array($x, $availableTimings)){
+                              array_push($disabledHours, $x);
+                            }
+                              $x++;
+                          }
+                        }
+                        ?>
                         <div class="form-group">
                           <label class="col-sm-3 control-label">Chech-In & Check-Out Time <span style="color: #ff0000">*</span></label>
                           <div class="col-sm-3">
-                            <div data-start-view="2" data-multiple= "true" data-date-hour-disabled="<?php echo $supplierGroupInfo[0]->DisableHours; ?>" data-date-format="yyyy-mm-dd hh:ii" class="input-group date checkintime">
+                            <div data-start-view="2" data-multiple= "true" data-date-hour-disabled="<?php echo implode(', ', $disabledHours); ?>" data-date-format="yyyy-mm-dd hh:00" class="input-group date checkintime">
                               <input size="16" readonly="true" required="true" data-parsley-trigger="keyup" type="text" id="CheckIn" name="CheckInDate" placeholder="Check-In Time" class="form-control"><span class="input-group-addon btn btn-primary"><i class="icon-th mdi mdi-calendar"></i></span>
                             </div>
                           </div>
@@ -389,11 +408,10 @@ h3.docleg > span::before{
           startDate: new Date(),
           //endDate: new Date(date.getTime()+30*24*3600*1000),
           minTime: 0,
-          minView : 0,
+          minView : 1,
           // multiple: true,
           autoclose:!0,
           pickSeconds: false,
-          minuteStep: 10,
           componentIcon:".mdi.mdi-calendar",
           navIcons:{
             rightIcon:"mdi mdi-chevron-right",

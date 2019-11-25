@@ -42,7 +42,6 @@ class Common_model extends CI_Model
 
   function getSupplierGroupInfo($SupplierGroupID)
   {
-
     $this->db->select('*');
 
     if($SupplierGroupID){
@@ -51,11 +50,21 @@ class Common_model extends CI_Model
 
     return $this->db->get('suppliergroup')->result();
   }
+  function getSupplierById($id){
+    $this->db->select('*');
+    $this->db->where('GroupID', $id);
+    return $this->db->get('suppliergroup')->result();
+  }
 
   function getSupplierGroupdetails()
   {
     $this->db->select('*');
     return $this->db->get('suppliergroup')->result();
+  }
+
+  function updateSupplierGroup($data, $id){
+    $this->db->where('GroupID', $id);
+    $this->db->update('suppliergroup', $data);
   }
 
   function getVehicleInfo($vno)

@@ -277,7 +277,7 @@
                $('#qrscan-success').niftyModal('show');
                setTimeout(function(){ 
                 //  window.location.href = "<?php //echo base_url('Booking/Verified/')?>"+qrcode+'/'+data.status;
-                window.location.href = "<?php echo base_url('Booking/Verified/')?>"+qrcode+'/'+data.status;
+                window.location.href = "<?php echo base_url('Booking/Security/')?>"+qrcode+'/'+data.status;
                 },2500);
              } else if(data.error == 100) {
                $('.alert-warning').hide();     

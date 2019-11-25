@@ -150,6 +150,24 @@ $detail = $userdetail;
                     </div>
                     <?php } ?>
                     <div class="form-group">
+                      <label class="col-sm-3 control-label" required="true">Supplier Group</label>
+                      <div class="col-sm-6">
+                        <select class="form-control" data-users-id="'.$row->UserUID.'" name="SupplierGroup">
+                          <option value="">-- ChooseSupplierGroup --</option>
+                          <?php
+                            foreach ($SupplierGroup as $key => $value) {
+                              if($detail->SupplierGroupID == $value->GroupID)
+                              {
+                                echo '<option value="' . $value->GroupID . '"selected>' . $value->SupplierGroup . '</option>';
+                              }else {
+                                echo '<option value="' . $value->GroupID . '">' . $value->SupplierGroup . '</option>';
+                              }
+                            }
+                          ?>
+                        </select>
+                      </div>
+                    </div>
+                    <div class="form-group">
                       <div class="col-sm-3"></div>
                       <div class="col-sm-6">
                         <button type="submit" class="btn btn-space btn-primary">Submit</button>

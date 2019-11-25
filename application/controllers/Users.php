@@ -1,8 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-//ini_set('display_errors', 1);
-//ini_set('display_startup_errors', 1);
-//error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 class Users extends CI_Controller 
 {
 
@@ -10,7 +10,7 @@ class Users extends CI_Controller
 	{
 	   parent::__construct();
 	   $this->load->model('User_model');
-	   $this->load->model('Booking_model');
+     $this->load->model('Booking_model');
 	  if(!$this->session->userdata('is_loggin')){ redirect(base_url('Login')); }
     if(!in_array($this->session->userdata('Role'),array(1,2,3,5))) { redirect(base_url()); }
 	}
@@ -43,6 +43,7 @@ class Users extends CI_Controller
     }
     $data['Page'] = 'add_edit_users_list';
     $data['SupplierGroup'] = $this->Common_model->getSupplierGroupdetails();
+    $data['slottype'] = $this->Common_model->getTableData('slottypes','Active');
     $data['Users'] = $this->User_model->GetUsers($Role);
     $this->load->view('add_edit_users_list',$data);
   }
@@ -50,11 +51,50 @@ class Users extends CI_Controller
   function updateUsersGroup(){
       $selectedSuppliers = $this->input->post('selectedSuppliers');
       $selectedGroup =  $this->input->post('selectedGroup');
+      $dockType = $this->input->post('dockType');
       foreach ($selectedSuppliers as $value) {
       $data['SupplierGroupID'] =  $selectedGroup;
       $this->User_model->updateSupplierGroup($data, $value);
         }
+        $this->updateSupplierGroupTime();
       echo json_encode(array("success"=>'ok',"message"=>"Supplier Group Successfully Updated."));
+  }
+
+  function supplierGroupDetails()
+  {
+    $data['Title'] = 'List All Supplier Groups';
+    $data['Page'] = 'List Supplier Group';  
+    $data['suppliergrouplist'] = $this->Common_model->getSupplierGroupdetails();
+    $this->load->view('list-supplier-groups',$data);   
+  }
+
+  function addNewSupplierGroup()
+  {
+    $data['Title'] = 'Add New Supplier Group';
+    $data['Page'] = 'AddNewGroup';  
+    // $data['company'] = $this->Common_model->getTableData('company','Active');
+    $this->load->view('add-new-group-to-list',$data);   
+  }
+
+  function editSupplierGroup()
+  {
+    $data['Title'] = 'Add New Supplier Group';
+    $data['Page'] = 'AddNewGroup';
+    $data['slottype'] = $this->Common_model->getTableData('slottypes','Active');
+    $data['suppliergrouplist'] = $this->Common_model->getSupplierGroupdetails();
+    $this->load->view('edit-Supplier-Group',$data);   
+  }
+
+  function updateSupplierGroupTime(){
+    $data['AvailableTimings'] = $this->input->post('availableTimings');
+    $data['DockTypeID'] = $this->input->post('dockType');
+    $selectedGroup =  $this->input->post('selectedGroup');
+    $this->Common_model->updateSupplierGroup($data, $selectedGroup);
+  }
+
+  function supplierGroupById($id){
+    $groupDetails = $this->Common_model->getSupplierById($id);
+    echo json_encode($groupDetails);
   }
 
   function fetchAttachments(){
@@ -82,7 +122,8 @@ class Users extends CI_Controller
     } else {
       $data['Title'] = 'Create New Supplier';
     }
-    $data['Page'] = 'adduser';  
+    $data['Page'] = 'adduser'; 
+    $data['SupplierGroup'] = $this->Common_model->getSupplierGroupdetails();
     $data['vtype'] = $this->Common_model->getTableData('vechicletype','Active');
     $data['company'] = $this->Common_model->getTableData('company','Active');
     $this->load->view('Add-users',$data);   
@@ -152,6 +193,7 @@ class Users extends CI_Controller
       $data['Title'] = 'Edit Suppliers';
     }
     $data['Page'] = 'listuser'; 
+    $data['SupplierGroup'] = $this->Common_model->getSupplierGroupdetails();
     $data['vtype'] = $this->Common_model->getTableData('vechicletype','Active');
     $data['userdetail'] = $this->User_model->GetUsersDetailsByUserID($UserUID);
     $data['company'] = $this->Common_model->getTableData('company','Active');
@@ -252,7 +294,7 @@ class Users extends CI_Controller
      $data['Password'] = $this->input->post('Password');
      /*$data['VNo'] = $this->input->post('VNo');
      $data['VType'] = $this->input->post('VType');*/
-     // $data['Supplier'] = $this->input->post('Supplier');
+     $data['SupplierGroupID'] = $this->input->post('SupplierGroup');
      if($this->session->userdata('Role') == 2)
      {
        $data['Role'] = 4;
@@ -360,7 +402,7 @@ class Users extends CI_Controller
      $data['EmailAddress2'] = $this->input->post('EmailAddress2');
      $data['PhoneNumber'] = $this->input->post('PhoneNumber');
      $data['UserName'] = $this->input->post('UserName');
-     /*$data['Password'] = $this->input->post('Password');*/
+     $data['SupplierGroupID'] = $this->input->post('SupplierGroup');
      /*$data['VNo'] = $this->input->post('VNo');
      $data['VType'] = $this->input->post('VType');*/
      $data['Supplier'] = $this->input->post('Supplier');

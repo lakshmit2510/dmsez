@@ -1,8 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
 class Booking extends CI_Controller 
 {
 
@@ -140,7 +140,8 @@ class Booking extends CI_Controller
     $data['company'] = $this->Common_model->getTableData('company','Active');
     $data['mode'] = $this->Common_model->getTableData('bookingmode','Active');
     $data['area'] = $this->Common_model->getTableData('area','Active');
-    $data['supplierGroupInfo'] = $this->Common_model->getSupplierGroupInfo($this->session->userdata('SupplierGroupID'));
+    $data['supplierGroupInfo'] = $this->Common_model->getSupplierById($this->session->userdata('SupplierGroupID'));
+    
     $this->load->view('add_booking',$data);
   }
 
@@ -401,6 +402,7 @@ class Booking extends CI_Controller
         $data['status'] = 2;
         $this->Booking_model->updateBooking($data, $detail->BookingID);
         $msg = array('error'=>0,'status'=>2);
+        $this->session->set_flashdata('done', 'Booking has been Checked-In Successfully');
       } else if((!empty($detail->ActualCheckIn) || !$detail->ActualCheckIn == NULL) && empty($detail->ActualCheckOut) || $detail->ActualCheckOut == NULL) 
       {
         $now = date('Y-m-d H:i:s');
@@ -418,6 +420,7 @@ class Booking extends CI_Controller
         $data['status'] = 3;
         $this->Booking_model->updateBooking($data, $detail->BookingID);
         $msg = array('error'=>0,'status'=>3); 
+        $this->session->set_flashdata('done', 'Booking has been Checked-out Successfully');
       } else {
         $msg = array('error'=>1);
       }
