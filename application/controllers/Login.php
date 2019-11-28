@@ -147,7 +147,11 @@ class Login extends CI_Controller
 	{
 	  $this->session->sess_destroy();
 	  redirect(base_url());
-	}
+  }
+  
+  function destroySession(){
+    $this->session->sess_destroy();
+  }
 
 	function error_404()
 	{

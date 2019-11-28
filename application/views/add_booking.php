@@ -271,7 +271,7 @@ h3.docleg > span::before{
                                       if(!in_array($this->session->userdata('Role'), array(1,3))) {
                                           if($value->Type == 'Parking') { continue; }
                                       }
-                                      if(count($supplierGroupInfo)!=0){
+                                      if($supplierGroupInfo[0]->DockTypeID!=0){
                                         if($supplierGroupInfo[0]->DockTypeID===$value->STypeID){
                                           echo '<option selected value="'.$value->STypeID.'">'.$value->Type.'</option>';
                                         }
@@ -289,7 +289,7 @@ h3.docleg > span::before{
                         <?php
                         $disabledHours = [];
                         $x = 0;
-                        if(count($supplierGroupInfo)!=0){
+                        if($supplierGroupInfo[0]->AvailableTimings!=''){
                           while($x <= 24) {
                             $availableTimings = explode(',', $supplierGroupInfo[0]->AvailableTimings);
 

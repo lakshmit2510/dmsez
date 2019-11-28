@@ -1,49 +1,86 @@
 <?php $this->load->view('template/header'); ?>
+<style>
+.group-time{
+    display:flex;
+}
+.group-time > span{
+    display:block;
+    width:30px;
+}
+.time-selection{
+    border: 1px solid #cccccc;
+    padding:5px;
+    list-style: none;
+    display: flex;
+    align-content: flex-start;
+    height: 150px;
+    width: 220px;
+    overflow: auto;
+    flex-wrap: wrap;
+}
+.time-selection li{
+    padding: 5px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border-radius: 10px;
+    cursor: pointer;
+    height: 30px;
+    background-color: #cccccc;
+}
+.time-selection li.selected{
+    background-color: #3C5A99;
+    color:#ffffff;
+}
 
+</style>
 <div class="be-content">
         <div class="main-content container-fluid">
           <div class="row">
             <div class="col-sm-12">
+              <?php if($this->session->flashdata('type') == 'done') { ?>
+              <div role="alert" class="alert alert-success alert-icon alert-icon-border alert-dismissible">
+                <div class="icon"><span class="mdi mdi-check"></span></div>
+                <div class="message">
+                  <button type="button" data-dismiss="alert" aria-label="Close" class="close"><span aria-hidden="true" class="mdi mdi-close"></span></button><strong>Success!</strong> <?php echo $this->session->flashdata('msg'); ?>.
+                </div>
+              </div>
+              <?php } ?> 
               <div class="panel panel-default panel-border-color panel-border-color-primary be-loading">
-                <div class="panel-heading panel-heading-divider"><i class="icon mdi mdi-layers"></i> Add New Dock</div>
+                <div class="panel-heading panel-heading-divider"><i class="icon mdi mdi-layers"></i> Create New Group</div>
                 <div class="panel-body">
-                  <form action="<?php echo base_url('');?>" class="form-horizontal" method="post">
+                  <form action="<?php echo base_url('Users/saveGroup');?>" class="form-horizontal" method="post">
                     <div class="form-group">
-                      <label class="col-sm-3 control-label">Building Name</label>
+                      <label class="col-sm-3 control-label">Group Name</label>
                       <div class="col-sm-6">
+                        <input type="text"  required="true" placeholder="Group Name" name="SupplierGroup" class="form-control">
                       </div>
                     </div>
                     <div class="form-group">
-                      <label class="col-sm-3 control-label">Dock No</label>
+                      <label class="col-sm-3 control-label">Select Time</label>
                       <div class="col-sm-6">
-                        <input type="text" required="" placeholder="Dock No" name="SlotName" class="form-control">
+                      <div style="margin-top: 10px">
+                        <ul class="time-selection">
+                        <?php
+                        $i = 0;
+                        while ($i <= 24) {
+                            if($i<10){
+                                echo '<li data-time="'.$i.'">0'.$i.':00</li>';
+                            }else{
+                                echo '<li data-time="'.$i.'">'.$i.':00</li>';
+                            }
+                            
+                            $i++;
+                        }
+                        ?>
+                        
+                        </ul>
                       </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-sm-3 control-label">Price ($)</label>
-                      <div class="col-sm-6">
-                        <input type="text" placeholder="Enter Price" name="Price" class="form-control">
-                      </div>
-                    </div>
-                    <div class="form-group">
-                      <label class="col-sm-3 control-label">Mode</label>
-                      <div class="col-sm-6">
-                        <select class="form-control" required="" name="Mode">
-                          <option value="">--- Choose Mode ----</option>
-                          <?php 
-                          $doctype = $this->Common_model->getTableData('bookingmode','Active');
-                          foreach ($doctype as $key => $value) 
-                          {
-                            echo '<option value="'.$value->ModeID.'">'.$value->Mode.'</option>';
-                          }
-                          ?>
-                        </select>
                       </div>
                     </div>
                     <div class="form-group">
                       <label class="col-sm-3 control-label">Dock Type</label>
                       <div class="col-sm-6">
-                        <select class="form-control" required="true" name="SlotType" id="SlotType">
+                        <select class="form-control" name="SlotType" id="SlotType">
                           <option value="">--- Choose Dock Type ----</option>
                           <?php 
                           foreach ($slottype as $key => $value) {
@@ -57,7 +94,7 @@
                       <div class="col-sm-3"></div>
                       <div class="col-sm-6 m-2">
                         <button type="submit" class="btn btn-space btn-primary">Submit</button>
-                        <a href="<?php echo base_url('Docks');?>" class="btn btn-space btn-default">Cancel</a>
+                        <a href="<?php echo base_url('Users/supplierGroupDetails');?>" class="btn btn-space btn-default">Cancel</a>
                       </div>
                     </div>
                   </form>
@@ -76,6 +113,12 @@
     <script src="<?php echo base_url();?>assets/lib/parsley/parsley.min.js" type="text/javascript"></script>
     <script type="text/javascript">
       $(document).ready(function(){ 
+
+        var availableTimings = [];
+        $('.time-selection .selected').each(function(){
+          availableTimings.push($(this).attr('data-time'));
+        });
+
         $('form').parsley();
 
         $('select').select2();
@@ -84,5 +127,8 @@
           $('.be-loading').addClass('be-loading-active');
         }); 
 
-       });
+        $('.time-selection li').on('click',function(){
+           $(this).toggleClass('selected');
+        })
+      });
     </script>

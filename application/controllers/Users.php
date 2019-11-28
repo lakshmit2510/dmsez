@@ -63,8 +63,8 @@ class Users extends CI_Controller
   function supplierGroupDetails()
   {
     $data['Title'] = 'List All Supplier Groups';
-    $data['Page'] = 'List Supplier Group';  
-    $data['suppliergrouplist'] = $this->Common_model->getSupplierGroupdetails();
+    $data['Page'] = 'ListSupplierGroup';
+    $data['suppliergrouplist'] = $this->Common_model->getSupplierGroupInfo();
     $this->load->view('list-supplier-groups',$data);   
   }
 
@@ -72,16 +72,26 @@ class Users extends CI_Controller
   {
     $data['Title'] = 'Add New Supplier Group';
     $data['Page'] = 'AddNewGroup';  
-    // $data['company'] = $this->Common_model->getTableData('company','Active');
+    $data['slottype'] = $this->Common_model->getTableData('slottypes','Active');
     $this->load->view('add-new-group-to-list',$data);   
   }
 
-  function editSupplierGroup()
+  function saveGroup()
   {
-    $data['Title'] = 'Add New Supplier Group';
-    $data['Page'] = 'AddNewGroup';
+    $data['SupplierGroup'] = $this->input->post('SupplierGroup');
+    $data['DockTypeID'] = $this->input->post('SlotType');
+    $this->Common_model->insertSupplierGroup($data);
+    $this->session->set_flashdata('msg',$data['SupplierGroup'].' has been Created Successfully');
+    $this->session->set_flashdata('type','done');
+    redirect($_SERVER['HTTP_REFERER']); 
+  }
+
+  function editSupplierGroup($GroupID)
+  {
+    $data['Title'] = 'Edit Supplier Group Details';
+    $data['Page'] = 'ListSupplierGroup';
     $data['slottype'] = $this->Common_model->getTableData('slottypes','Active');
-    $data['suppliergrouplist'] = $this->Common_model->getSupplierGroupdetails();
+    $data['suppliergrouplist'] = $this->Common_model->getSupplierById($GroupID);
     $this->load->view('edit-Supplier-Group',$data);   
   }
 
@@ -92,9 +102,29 @@ class Users extends CI_Controller
     $this->Common_model->updateSupplierGroup($data, $selectedGroup);
   }
 
+  function updateSupplierGroupDetails(){
+    if($this->input->post())
+    {
+      $selectedGroup =  $this->input->post('group_Id');
+      $data['AvailableTimings'] = $this->input->post('availableTimings');
+      $data['DockTypeID'] = $this->input->post('dockType');
+      $this->Common_model->updateSupplierGroup($data, $selectedGroup);
+      $this->session->set_flashdata('msg', 'Supplier Group has been Updated Successfully');
+      $this->session->set_flashdata('type','done');
+    }
+    redirect($_SERVER['HTTP_REFERER']); 
+  }
+
   function supplierGroupById($id){
     $groupDetails = $this->Common_model->getSupplierById($id);
     echo json_encode($groupDetails);
+  }
+
+  function deleteGroup($GroupID)
+  {
+    if(empty($GroupID)) { redirect(base_url('Dashboard')); }
+    $data['detail'] = $this->Common_model->deleteSupplierGroupById($GroupID);
+    echo json_encode(array("success"=>'ok',"message"=>"Group Successfully Deleted."));
   }
 
   function fetchAttachments(){

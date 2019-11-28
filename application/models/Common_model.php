@@ -40,16 +40,13 @@ class Common_model extends CI_Model
     return $this->db->get('vehicle')->row();
   }
 
-  function getSupplierGroupInfo($SupplierGroupID)
+  function getSupplierGroupInfo()
   {
     $this->db->select('*');
-
-    if($SupplierGroupID){
-        $this->db->where('GroupID', $SupplierGroupID);
-    }
-
+    $this->db->join('slottypes','slottypes.STypeID = suppliergroup.DockTypeID','LEFT');
     return $this->db->get('suppliergroup')->result();
   }
+
   function getSupplierById($id){
     $this->db->select('*');
     $this->db->where('GroupID', $id);
@@ -65,6 +62,22 @@ class Common_model extends CI_Model
   function updateSupplierGroup($data, $id){
     $this->db->where('GroupID', $id);
     $this->db->update('suppliergroup', $data);
+  }
+
+  function insertSupplierGroup($data){
+    $this->db->insert('suppliergroup', $data);
+    return $this->db->insert_id();
+  }
+
+  function deleteSupplierGroupById($GroupID)
+  {
+    $this->db->where('GroupID',$GroupID);
+    if($this->db->delete('suppliergroup'))
+    {
+        return 1;
+    } else {
+        return 0;
+    }
   }
 
   function getVehicleInfo($vno)
