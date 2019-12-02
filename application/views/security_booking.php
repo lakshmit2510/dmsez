@@ -30,35 +30,74 @@
               <div class="panel panel-default panel-border-color panel-border-color-primary">
                 <div class="panel-heading panel-heading-divider"><?php echo $Title;?></div>
                 <div class="panel-body">
+                <?php if($this->session->flashdata('done')||$this->session->flashdata('ErrorCheckIn')||$this->session->flashdata('error')) { ?>
+                  <div class="alert-backdrop"></div>
+                <?php } ?>
                   <?php if($this->session->flashdata('done')) { ?>
-                  <div role="alert" class="alert alert-success alert-icon alert-icon-border alert-dismissible">
-                    <div class="icon"><span class="mdi mdi-check"></span></div>
-                    <div class="message">
-                      <button type="button" data-dismiss="alert" aria-label="Close" class="close"><span aria-hidden="true" class="mdi mdi-close"></span></button><strong>Success!</strong> <?php echo $this->session->flashdata('done'); ?>.
+                  <div class="alert-wrapper">
+                    <div role="alert" class="alert alert-success alert-icon alert-icon-border alert-dismissible">
+                      <div class="icon"><span class="mdi mdi-check"></span></div>
+                      <div class="message">
+                        <div class="message-display">
+                          <h4>Success!</h4>
+                          <span><?php echo $this->session->flashdata('done'); ?></span>
+                        </div>
+                        <button type="button" data-dismiss="alert" aria-label="Close" class="close reload-close"><span aria-hidden="true" class="mdi mdi-close"></span></button>
+                      </div>
                     </div>
                   </div>
+                  
                   <?php } 
                   if($this->session->flashdata('ErrorCheckIn')) {
                   ?>
-                  <div role="alert" class="alert alert-warning alert-icon alert-icon-border alert-dismissible">
-                    <div class="icon"><span class="mdi mdi-info"></span></div>
-                    <div class="message">
-                      <button type="button" data-dismiss="alert" aria-label="Close" class="close"><span aria-hidden="true" class="mdi mdi-close"></span></button><strong>Warning : &nbsp;</strong> <?php echo $this->session->flashdata('MsgCheckIn');?>
+                  <div class="alert-wrapper">
+                    <div role="alert" class="alert alert-warning alert-icon alert-icon-border alert-dismissible">
+                      <div class="icon"><span class="mdi mdi-info"></span></div>
+                      <div class="message">
+                        <div class="message-display">
+                          <h4>Warning!</h4>
+                          <span><?php echo $this->session->flashdata('MsgCheckIn');?></span>
+                        </div>
+                        <button type="button" data-dismiss="alert" aria-label="Close" class="close"><span aria-hidden="true" class="mdi mdi-close"></span></button>
+                      </div>
                     </div>
                   </div>
                   <?php } if($this->session->flashdata('error')) { ?>
-                  <div role="alert" class="alert alert-danger alert-icon alert-icon-border alert-dismissible">
-                    <div class="icon"><span class="mdi mdi-close"></span></div>
-                    <div class="message">
-                      <button type="button" data-dismiss="alert" aria-label="Close" class="close"><span aria-hidden="true" class="mdi mdi-close"></span></button><strong>Error!</strong> <?php echo $this->session->flashdata('error'); ?>.
+                  <div class="alert-wrapper">
+                    <div role="alert" class="alert alert-danger alert-icon alert-icon-border alert-dismissible">
+                      <div class="icon"><span class="mdi mdi-close"></span></div>
+                      <div class="message">
+                        <div class="message-display">
+                          <h4>Error!</h4>
+                          <span><?php echo $this->session->flashdata('error'); ?></span>
+                        </div>
+                        <button type="button" data-dismiss="alert" aria-label="Close" class="close"><span aria-hidden="true" class="mdi mdi-close"></span></button>
+                      </div>
                     </div>
                   </div>
                   <?php } ?>
-                  <div role="alert" id="Noticebox" style="display: none;" class="alert alert-warning alert-icon alert-icon-border alert-dismissible">
+                  <div id="Noticebox" style="display: none;">
+                  <div class="alert-backdrop"></div>
+                  <div class="alert-wrapper">
+                    <div role="alert" class="alert alert-warning alert-icon alert-icon-border alert-dismissible">
+                      <div class="icon"><span class="mdi mdi-info"></span></div>
+                      <div class="message">
+                        <div class="message-display">
+                          <h4>Warning : &nbsp;</h4>
+                          <span id="Noticemsg">
+                        </div>
+                        <button type="button" data-dismiss="alert" aria-label="Close" class="close reload-close"><span aria-hidden="true" class="mdi mdi-close"></span></button>
+                      </div>
+                    </div>
+                  </div>
+                  </div>
+                  
+                  <!-- <div role="alert" id="Noticebox" style="display: none;" class="alert alert-warning alert-icon alert-icon-border alert-dismissible">
                     <div class="icon"><span class="mdi mdi-info"></span></div>
                     <div class="message">
-                      <button type="button" data-dismiss="alert" aria-label="Close" class="close"><span aria-hidden="true" class="mdi mdi-close"></span></button><strong>Warning : &nbsp;</strong> <span id="Noticemsg"></span></div>
-                  </div>
+                      <button type="button" data-dismiss="alert" aria-label="Close" class="close"><span aria-hidden="true" class="mdi mdi-close"></span></button><strong>Warning : &nbsp;</strong> <span id="Noticemsg"></span>
+                    </div>
+                  </div> -->
                   <div class="table-responsive">
                   <table id="table3" class="table table-striped table-hover table-fw-widget nowrap">
                     <thead>
@@ -203,6 +242,12 @@
 
       $(document).ready(function()
       {
+        $('.reload-close').on('click',function(){
+          location.reload();
+        });
+        $('.alert-wrapper .close').on('click',function(){
+          $('.alert-backdrop').hide();
+        });
         // Security name change
           $('.security-name-change').on('change',function(evt){
               var bookingId = $(this).attr('data-booking-id');
@@ -214,7 +259,7 @@
                   data: {userUId: userUId, bookingId: bookingId},
                   success: function(data)
                   {
-                      console.log(data);
+                      //console.log(data);
                   },
                   error: function() {
 
@@ -246,7 +291,10 @@
           endChar: [13],
           onComplete: function(barcode, qty){
            validScan = true;
-           qrvalue = /:(.+)/.exec(barcode)[1];
+          //  var paramArr = barcode.split(',');
+          //  var vehicleNo = /:(.+)/.exec(paramArr[1])[1];
+          qrvalue = /:(.+)/.exec(barcode)[1];
+          // qrvalue = /:(.+)/.exec(paramArr[0])[1];
            jobno = $.trim(qrvalue);
            $('.qrscanned_val').val(jobno);
            $('#qrscan-info').niftyModal('show');
@@ -272,12 +320,15 @@
              if(data.error == 0)
              {
                $('#qrscan-success').niftyModal('show');
-               setTimeout(function(){ window.location.href = "<?php echo base_url('Booking/Verified/')?>"+qrcode+'/'+data.status;},2500);
+               setTimeout(function(){ 
+                //  window.location.href = "<?php //echo base_url('Booking/Verified/')?>"+qrcode+'/'+data.status;
+                window.location.href = "<?php echo base_url('Booking/Security/')?>"+qrcode+'/'+data.status;
+                },2500);
              } else if(data.error == 100) {
-               $('.alert-warning').hide();     
+              //  $('.alert-warning').hide();     
                $('#Noticebox').show();     
                $('#Noticemsg').html('');     
-               $('#Noticemsg').html(data.Msg);     
+                $('#Noticemsg').html(data.Msg);     
              } else {
                $('#qrscan-error').niftyModal('show');
              }

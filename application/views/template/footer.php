@@ -15,5 +15,14 @@
       	App.init();
       });
     </script>
+    <script>
+    var timeoutVal =  7200 * 1000;
+    setTimeout(() => {
+      $.ajax({
+            url: "<?php echo base_url();?>Login/destroySession",
+            success: function() {}
+        }); 
+    }, timeoutVal);
+    </script>
   </body>
 </html>
