@@ -22,6 +22,7 @@
                     <thead>
                       <tr>
                         <th>Vehicle No</th>
+<!--                          <th>Vehicle Name</th>-->
                         <th>Vehicle Type</th>
                         <th>Driver Name</th>
                         <th>Driver No</th>

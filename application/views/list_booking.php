@@ -69,7 +69,8 @@
                             <a href="<?php echo base_url('Booking/Sendmail/'.$row->BookingID);?>" class="btn btn-space btn-primary btn-loader"><i class="icon icon-left mdi mdi-email"></i> Email</a>
                             <?php } ?>
                             <a href="<?php echo base_url('Booking/BPrint/'.$row->BookingRefNo)?>" class="btn btn-space btn-success btn-loader"><i class="icon icon-left mdi mdi-print"></i> Print</a>
-                          </td>
+                            <a href="<?php echo base_url('Booking/editBooking/'.$row->BookingID);?>" class="btn btn-space btn-primary btn-loader"><i class="icon icon-left mdi mdi-edit"></i> Edit</a>
+                            </td>
                           </tr>
                         <?php
                         }

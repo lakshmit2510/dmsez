@@ -382,7 +382,7 @@ $config['encryption_key'] = '';
 */
 $config['sess_driver'] = 'files';
 $config['sess_cookie_name'] = 'ci_session';
-$config['sess_expiration'] = 7200;
+$config['sess_expiration'] = 0;
 $config['sess_save_path'] = NULL;
 $config['sess_match_ip'] = FALSE;
 $config['sess_time_to_update'] = 300;
@@ -524,3 +524,30 @@ $config['rewrite_short_tags'] = FALSE;
 | Array:		array('10.0.1.200', '192.168.5.0/24')
 */
 $config['proxy_ips'] = '';
+
+/*
+|--------------------------------------------------------------------------
+| Uploaded file path
+|--------------------------------------------------------------------------
+|
+| Common folder path for file uploads
+*/
+$config['upload_file_path'] = './uploads/';
+
+/*
+|--------------------------------------------------------------------------
+| Upload file extensions
+|--------------------------------------------------------------------------
+|
+| Default configuration for file extensions
+*/
+$config['upload_file_extensions'] = "gif|jpg|jpeg|png|iso|dmg|zip|rar|doc|docx|xls|xlsx|ppt|pptx|csv|ods|odt|odp|pdf|rtf|sxc|sxi|txt|exe|avi|mpeg|mp3|mp4|3gp";
+
+/*
+|--------------------------------------------------------------------------
+| Upload file Size
+|--------------------------------------------------------------------------
+|
+| Max file upload size
+*/
+$config['upload_file_size'] = "8048000"; // Can be set to particular file size , here it is 2 MB(2048 Kb)

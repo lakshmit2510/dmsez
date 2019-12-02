@@ -15,6 +15,19 @@
                         <input type="text" required="" value="<?php echo $vehicle->VehicleNo?>" name="VehicleNo" placeholder="Vehicle Number" class="form-control">
                       </div>
                     </div>
+                      <!--   Adding vehivle name-->
+<!--                      <div class="form-group">-->
+<!--                          <label class="col-sm-3 control-label">Vehicle Name</label>-->
+<!--                          <div class="col-sm-6">-->
+<!--                              <select class="form-control" required="true" name="VehicleName">-->
+<!--                                  <option value="">--- Choose Vehicle Name ----</option>-->
+<!--                                  <option value="Van">Van</option>-->
+<!--                                  <option value="Container">Container</option>-->
+<!--                                  <option value="Motorbike">Motorbike</option>-->
+<!---->
+<!--                              </select>-->
+<!--                          </div>-->
+<!--                      </div>-->
                     <div class="form-group">
                       <label class="col-sm-3 control-label">Vehicle Type</label>
                       <div class="col-sm-6">

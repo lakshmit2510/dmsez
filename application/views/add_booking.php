@@ -1,4 +1,5 @@
 <?php $this->load->view('template/header'); ?>
+
 <link rel="stylesheet" type="text/css" href="<?php echo base_url();?>assets/lib/jquery.gritter/css/jquery.gritter.css"/>
 <style type="text/css">
 .dockslot{
@@ -127,7 +128,7 @@ h3.docleg > span::before{
                     <li data-step="2">Select Time & Dock Information<span class="chevron"></span></li>
                     <li data-step="3">Docks Selection<span class="chevron"></span></li>
                   </ul>
-                  <form action="<?php echo base_url('Booking/save');?>" class="form-horizontal" method="post">
+                  <form action="<?php echo base_url('Booking/save');?>" class="form-horizontal" method="post" enctype="multipart/form-data">
                   <div class="step-content">
                     <input type="hidden" name="VType" id="pVType">
                     <div data-step="1" class="step-pane active">
@@ -231,6 +232,13 @@ h3.docleg > span::before{
                         <input type="text" name="NRIC" id="NRIC" readonly="true" class="form-control">
                       </div>
                     </div>
+                        <!--Upload file input-->
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">Attatch Documents</label>
+                        <div class="col-sm-6">
+                            <input type="file" name="upload_file" multiple/>
+                        </div>
+                    </div>
                     <?php if($this->session->userdata('Role') == 1) { ?>
                     <input type="hidden" value="Internal" name="UserType">
                     <!-- <div class="form-group">
@@ -243,6 +251,7 @@ h3.docleg > span::before{
                       </div>
                     </div> -->
                     <?php } else { echo '<input type="hidden" name="UserType" value="'.$this->session->userdata('UserType').'">'; }?>
+
                     <div class="form-group">
                       <div class="col-sm-offset-5 col-sm-10" style="padding: 15px 0;">
                         <a href="<?php echo base_url('Booking');?>" class="btn btn-space btn-default">Cancel</a>
@@ -252,9 +261,49 @@ h3.docleg > span::before{
                     </div>
                     <div data-step="2" class="step-pane">
                         <div class="form-group">
+                            <label class="col-sm-3 control-label">Docks Type <span style="color: #ff0000">*</span></label>
+                            <div class="col-sm-3">
+                                <select class="form-control" required="true" data-parsley-trigger="keyup" name="SlotType" id="SlotType">
+                                    <option value="">--- Choose Docks Type ----</option>
+                                    <?php
+                                    foreach ($slottype as $key => $value)
+                                    {
+                                      if(!in_array($this->session->userdata('Role'), array(1,3))) {
+                                          if($value->Type == 'Parking') { continue; }
+                                      }
+                                      if($supplierGroupInfo[0]->DockTypeID!=0){
+                                        if($supplierGroupInfo[0]->DockTypeID===$value->STypeID){
+                                          echo '<option selected value="'.$value->STypeID.'">'.$value->Type.'</option>';
+                                        }
+                                      }else{
+                                        echo '<option value="'.$value->STypeID.'">'.$value->Type.'</option>';
+                                      }
+                                    }
+                                    ?>
+                                </select>
+                            </div>
+                            <div class="col-sm-3">
+                                <input type="hidden" id="SlotNos" name="SlotNos" value="1">
+                            </div>
+                        </div>
+                        <?php
+                        $disabledHours = [];
+                        $x = 0;
+                        if($supplierGroupInfo[0]->AvailableTimings!=''){
+                          while($x <= 24) {
+                            $availableTimings = explode(',', $supplierGroupInfo[0]->AvailableTimings);
+
+                            if(count($availableTimings) > 0 && !in_array($x, $availableTimings)){
+                              array_push($disabledHours, $x);
+                            }
+                              $x++;
+                          }
+                        }
+                        ?>
+                        <div class="form-group">
                           <label class="col-sm-3 control-label">Chech-In & Check-Out Time <span style="color: #ff0000">*</span></label>
                           <div class="col-sm-3">
-                            <div data-start-view="2" data-date-format="yyyy-mm-dd hh:00" class="input-group date checkintime">
+                            <div data-start-view="2" data-multiple= "true" data-date-hour-disabled="<?php echo implode(', ', $disabledHours); ?>" data-date-format="yyyy-mm-dd hh:00" class="input-group date checkintime">
                               <input size="16" readonly="true" required="true" data-parsley-trigger="keyup" type="text" id="CheckIn" name="CheckInDate" placeholder="Check-In Time" class="form-control"><span class="input-group-addon btn btn-primary"><i class="icon-th mdi mdi-calendar"></i></span>
                             </div>
                           </div>
@@ -281,26 +330,7 @@ h3.docleg > span::before{
                           </select>   
                         </div>
                       </div>
-                      <div class="form-group">
-                        <label class="col-sm-3 control-label">Docks Type <span style="color: #ff0000">*</span></label>
-                        <div class="col-sm-3">
-                          <select class="form-control" required="true" data-parsley-trigger="keyup" name="SlotType" id="SlotType">
-                            <option value="">--- Choose Docks Type ----</option>
-                            <?php 
-                            foreach ($slottype as $key => $value) 
-                            {
-                              if(!in_array($this->session->userdata('Role'), array(1,3))) {                                   
-                                if($value->Type == 'Parking') { continue; }
-                              }
-                              echo '<option value="'.$value->STypeID.'">'.$value->Type.'</option>';
-                            }
-                            ?>
-                          </select>
-                        </div>
-                        <div class="col-sm-3">
-                          <input type="hidden" id="SlotNos" name="SlotNos" value="1">
-                        </div>
-                      </div>
+
                       <div class="form-group">
                         <div class="col-sm-offset-5 col-sm-10" style="padding: 15px 0;">
                           <button data-wizard="#wizard1" class="btn btn-default btn-space wizard-previous">Previous</button>
@@ -337,6 +367,8 @@ h3.docleg > span::before{
     <script src="<?php echo base_url();?>assets/lib/bootstrap-slider/js/bootstrap-slider.js" type="text/javascript"></script>
     <script src="<?php echo base_url();?>assets/lib/parsley/parsley.min.js" type="text/javascript"></script>
     <script src="<?php echo base_url();?>assets/lib/jquery.gritter/js/jquery.gritter.js" type="text/javascript"></script>
+<!--    <script src="-->--><?php ////echo base_url();?><!--<!--assets/lib/daterangepicker/js/daterangepicker.js" type="text/javascript"></script>-->-->
+<!--    <script src="--><?php //echo base_url();?><!--assets/lib/bootstrap-datetimepicker-multiple.min.js" type="text/javascript"></script>-->
     <script type="text/javascript">
       $(document).ready(function(){ 
         $('form').parsley();
@@ -374,8 +406,10 @@ h3.docleg > span::before{
         var today = new Date(date.getFullYear(), date.getMonth(), date.getDate());
         $(".checkintime").datetimepicker({
           startDate: new Date(),
+          //endDate: new Date(date.getTime()+30*24*3600*1000),
           minTime: 0,
           minView : 1,
+          // multiple: true,
           autoclose:!0,
           pickSeconds: false,
           componentIcon:".mdi.mdi-calendar",
@@ -386,6 +420,7 @@ h3.docleg > span::before{
         }).on('change',function(event, date) {
           checkin = event.delegateTarget.childNodes[1].value;
           timestamp = new Date(checkin);
+
           var chkdate = moment(timestamp).format("YYYY-MM-DD HH:mm");
 
           chkdate = new Date(chkdate);

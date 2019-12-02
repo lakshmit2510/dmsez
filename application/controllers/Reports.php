@@ -11,7 +11,6 @@ class Reports extends CI_Controller
      $this->load->model('User_model');
      $this->load->model('Report_model');
     if(!$this->session->userdata('is_loggin')){ redirect(base_url('Login')); }
-    if(!in_array($this->session->userdata('Role'), array(1,2,3))) { redirect('Dashboard'); exit; }
   }
 
   public function index($filter='')
@@ -20,6 +19,7 @@ class Reports extends CI_Controller
     $data['Page'] = 'Reports';
     $data['company'] = $this->Common_model->getTableData('company','Active');
     $data['mode'] = $this->Common_model->getTableData('bookingmode','Active');
+    $data['slottype'] = $this->Common_model->getTableData('slottypes','Active');
     $data['booking'] = $this->Booking_model->getBookingDetail();
     $data['subcontractor'] = $this->User_model->getUserByRole('4');
     $data['supplier'] = $this->User_model->getUserByRole('2');
@@ -68,6 +68,7 @@ class Reports extends CI_Controller
     $result = $this->Report_model->getBarChartData($keyword,$fdate,$tdate,$month_year,$flt);
     $booking = $this->Report_model->getDoughChartData($fdate,$tdate,$flt);
 
+
     // Single Month set start point 0
     if(sizeof($result) == 1) {
       $data['booking'][] = 0;
@@ -93,6 +94,50 @@ class Reports extends CI_Controller
 
   echo json_encode($data, JSON_NUMERIC_CHECK);
 
+}
+//Reports page data
+function FetchDockTypeTableData(){
+    $tableParams = [];
+    $date = explode("-", $this->input->post('date'));
+    $tableParams['fDate'] = strtotime($date[0]);
+    $tableParams['tDate'] = strtotime($date[1]);
+    $tableParams['dockType'] = $this->input->post('dockType');
+    $tableModelData = $this->Report_model->getDockTypeTableData($tableParams);
+    $tableData = array();
+    foreach ($tableModelData as $key => $value)
+    {
+        $obj = (object) [
+            'Date' => $value->Date,
+            'DockType' => $value->DockType,
+            'AvailableDocks' => ((($value->NumberOfDocks)*24)- $value->BookedDocks),
+            'BookedDocks' => (int) $value->BookedDocks,
+            'Utilization' => round((($value->BookedDocks / (($value->NumberOfDocks)*24))*100), 2),
+        ];
+        array_push($tableData, $obj);
+    }
+    echo json_encode($tableData);
+}
+function FetchDockTypeChartData(){
+    $requestParams = [];
+    $date = explode("-", $this->input->post('date'));
+    $requestParams['fDate'] = strtotime($date[0]);
+    $requestParams['tDate'] = strtotime($date[1]);
+    $requestParams['dockType'] = $this->input->post('dockType');
+    $chartModelData = $this->Report_model->getDockTypeChartData($requestParams);
+    $chartData = [];
+    $labels = [];
+    foreach ($chartModelData as $key => $value)
+    {
+        array_push($labels, $value->Date);
+        if(isset($chartData[$value->SlotName])){
+            array_push($chartData[$value->SlotName],  ['x'=>$value->Date,'y'=> (int)$value->BookedDocks]);
+        }else{
+            $chartData[$value->SlotName] = [ (object)['x'=>$value->Date, 'y'=>(int)$value->BookedDocks] ];
+        }
+
+    }
+    $resdata = (object)['labels'=>array_values(array_unique($labels, SORT_REGULAR)),'data'=>$chartData];
+    echo json_encode($resdata);
 }
 
 }
