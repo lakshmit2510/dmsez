@@ -101,7 +101,19 @@
                             <td>'.$row->VehicleNo.'</td>
                             <td>'.$row->BuildingName.'</td>
                             <td>'.$row->SlotName.'</td>
-                            <td><input type="text" value="SecurityName" name="Security Name"></td>
+                            <td>
+                            <select class="security-name-change" data-booking-id="'.$row->BookingID.'" name="SecurityName">
+                                      <option value="">--- ChooseSecurityName ----</option>';
+                                          foreach ($Users as $key => $value) {
+                                              if($row->SecurityUserUID===$value->UserUID){
+                                                  echo '<option selected value="'.$value->UserUID.'">'.$value->UserName.'</option>';
+                                              }else{
+                                                  echo '<option value="'.$value->UserUID.'">'.$value->UserName.'</option>';
+                                              }
+                                          }
+
+                                echo '</select>
+                            </td>
                             <td class="center">'.date('m/d/Y',strtotime($row->CheckIn)).'</td>
                             <td class="center">'.date('H:i',strtotime($row->CheckIn)).' - '.date('H:i',strtotime($row->CheckOut)).'</td> 
                             <td class="center" align="center">'.$CheckIn.' - '.$CheckOut.'</td>
@@ -191,7 +203,24 @@
 
       $(document).ready(function()
       {
-        
+        // Security name change
+          $('.security-name-change').on('change',function(evt){
+              var bookingId = $(this).attr('data-booking-id');
+              var userUId = $(this).val();
+              $.ajax({
+                  type: 'POST',
+                  url: '<?php echo base_url('Booking/updateRow/')?>',
+                  dataType: 'JSON',
+                  data: {userUId: userUId, bookingId: bookingId},
+                  success: function(data)
+                  {
+                      console.log(data);
+                  },
+                  error: function() {
+
+                  }
+              });
+          });
         $("#table3").dataTable({
           buttons:["copy", 
           {

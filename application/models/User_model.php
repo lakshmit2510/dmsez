@@ -168,6 +168,17 @@ class User_model extends CI_Model
 	  return $q->row();
 	}
 
+    function deleteUsersDetailsByUserID($UserUID)
+    {
+        $this->db->where('UserUID',$UserUID);
+        if($this->db->delete('users'))
+        {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+
 	function GetUsersOnly()
 	{
 	  $data['Roles'] = 'User';	
