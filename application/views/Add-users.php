@@ -133,6 +133,19 @@
                         </select>
                       </div>
                     </div>
+                    <div class="form-group">
+                      <label class="col-sm-3 control-label" required="true">Supplier Group</label>
+                      <div class="col-sm-6">
+                        <select class="form-control" name="SupplierGroup">
+                          <option value="">-- ChooseSupplierGroup --</option>
+                          <?php
+                            foreach ($SupplierGroup as $key => $value) {
+                              echo '<option value="' . $value->GroupID . '">' . $value->SupplierGroup . '</option>';
+                            }
+                          ?>
+                        </select>
+                      </div>
+                    </div>
                     <?php } ?>
                     <div class="form-group">
                       <div class="col-sm-3"></div>

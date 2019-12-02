@@ -73,6 +73,12 @@ class User_model extends CI_Model
 	   }
 	}
 
+  function updateSupplierGroup($data,$id)
+   {
+        $this->db->where('UserUID', $id);
+        $this->db->update('users', $data);
+   }
+
   function ProcessUpdate($UserUID,$data)
   {
     $this->db->where('UserUID',$UserUID);
@@ -152,6 +158,7 @@ class User_model extends CI_Model
     }      
     $this->db->where('IsApproved',1);
     $this->db->join('vechicletype','vechicletype.TypeID = users.VType','LEFT');
+    $this->db->join('suppliergroup','suppliergroup.GroupID = users.SupplierGroupID','LEFT');
 	  $q = $this->db->get('users');	 
 	  if($q->num_rows()>0)
 	  {
