@@ -32,6 +32,11 @@
     color:#ffffff;
 }
 
+.group-name-exists{
+color:red;
+margin-top: 15px;
+}
+
 </style>
 <div class="be-content">
         <div class="main-content container-fluid">
@@ -54,6 +59,7 @@
                       <div class="col-sm-6">
                         <input type="text"  required="true" placeholder="Group Name" name="SupplierGroup" class="form-control">
                       </div>
+                      <div class="group-name-exists" style="display:none;">Group already exists.</div>
                     </div>
                     <div class="form-group">
                       <label class="col-sm-3 control-label">Select Time</label>
@@ -113,19 +119,61 @@
     <script src="<?php echo base_url();?>assets/lib/parsley/parsley.min.js" type="text/javascript"></script>
     <script type="text/javascript">
       $(document).ready(function(){ 
+        $('[name="SupplierGroup"]').on('keyup',function(){
+          var groupName = $(this).val();
+          if(groupName !== ''){
+            $.ajax({
+            type: 'GET',
+            dataType: 'JSON',
+            url: "<?php echo base_url();?>Users/validateGroupName/" + groupName,
+            success:function(res){
+              if(res.isExists){
+                $('.group-name-exists').show();
+                $('[type="submit"]').prop('disabled', true);
+              } else {
+                $('.group-name-exists').hide();
+                $('[type="submit"]').prop('disabled', false);
+              }
+            }
+          });
+          }
+          
+        });
 
-        var availableTimings = [];
-        $('.time-selection .selected').each(function(){
-          availableTimings.push($(this).attr('data-time'));
+        $('[type="submit"]').on('click',function(evt){
+          evt.preventDefault();
+          var groupName = $('[name="SupplierGroup"]').val();
+          var availableTimings = [];
+
+          $('.time-selection .selected').each(function(){
+            availableTimings.push($(this).attr('data-time'));
+          });
+
+          var dockType = $('[name="SlotType"]').val();
+          $.ajax({
+            type: 'POST',
+            url: '<?php echo base_url('Users/saveGroup')?>',
+            dataType: 'JSON',
+            data: { 
+                supplierGroup: groupName,
+                dockType: dockType,
+                availableTimings:availableTimings.join(','),
+                },
+            success: function (data) {
+                if(data.isSaved){
+                  window.location = "<?php echo base_url();?>Users/supplierGroupDetails"
+                }
+            },
+            error: function () {
+
+            }
+          });
+
         });
 
         $('form').parsley();
 
         $('select').select2();
-
-        $('form').submit(function(){
-          $('.be-loading').addClass('be-loading-active');
-        }); 
 
         $('.time-selection li').on('click',function(){
            $(this).toggleClass('selected');

@@ -63,6 +63,11 @@ class Common_model extends CI_Model
     $this->db->where('GroupID', $id);
     $this->db->update('suppliergroup', $data);
   }
+  function checkGroupName($groupName){
+    $this->db->select('*');
+    $this->db->where('SupplierGroup', $groupName);
+    return $this->db->get('suppliergroup')->result();
+  }
 
   function insertSupplierGroup($data){
     $this->db->insert('suppliergroup', $data);

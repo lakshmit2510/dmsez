@@ -10,7 +10,7 @@ class Users extends CI_Controller
 	{
 	   parent::__construct();
 	   $this->load->model('User_model');
-	   $this->load->model('Booking_model');
+     $this->load->model('Booking_model');
 	  if(!$this->session->userdata('is_loggin')){ redirect(base_url('Login')); }
     if(!in_array($this->session->userdata('Role'),array(1,2,3,5))) { redirect(base_url()); }
 	}
@@ -30,109 +30,112 @@ class Users extends CI_Controller
     $this->load->view('List-users',$data);
   }
 
-    public function update()
+	public function update()
+  {
+    if(!in_array($this->session->userdata('Role'), array(1,2,3))) { redirect('Dashboard'); exit; }
+    if($this->session->userdata('Role') == 2)
     {
-        if(!in_array($this->session->userdata('Role'), array(1,2,3))) { redirect('Dashboard'); exit; }
-        if($this->session->userdata('Role') == 2)
-        {
-            $data['Title'] = 'Update Sub-contractors Information';
-            $Role = 4;
-        } else {
-            $data['Title'] = 'Update Suppliers Information';
-            $Role = 2;
-        }
-        $data['Page'] = 'add_edit_users_list';
-        $data['SupplierGroup'] = $this->Common_model->getSupplierGroupdetails();
-        $data['slottype'] = $this->Common_model->getTableData('slottypes','Active');
-        $data['Users'] = $this->User_model->GetUsers($Role);
-        $this->load->view('add_edit_users_list',$data);
+      $data['Title'] = 'Update Sub-contractors Information';
+      $Role = 4;
+    } else {
+      $data['Title'] = 'Update Suppliers Information';
+      $Role = 2;
     }
+    $data['Page'] = 'add_edit_users_list';
+    $data['SupplierGroup'] = $this->Common_model->getSupplierGroupdetails();
+    $data['slottype'] = $this->Common_model->getTableData('slottypes','Active');
+    $data['Users'] = $this->User_model->GetUsers($Role);
+    $this->load->view('add_edit_users_list',$data);
+  }
 
-    function updateUsersGroup(){
-        $selectedSuppliers = $this->input->post('selectedSuppliers');
-        $selectedGroup =  $this->input->post('selectedGroup');
-        foreach ($selectedSuppliers as $value) {
-            $data['SupplierGroupID'] =  $selectedGroup;
-            $this->User_model->updateSupplierGroup($data, $value);
+  function updateUsersGroup(){
+      $selectedSuppliers = $this->input->post('selectedSuppliers');
+      $selectedGroup =  $this->input->post('selectedGroup');
+      $dockType = $this->input->post('dockType');
+      foreach ($selectedSuppliers as $value) {
+      $data['SupplierGroupID'] =  $selectedGroup;
+      $this->User_model->updateSupplierGroup($data, $value);
         }
         $this->updateSupplierGroupTime();
-        echo json_encode(array("success"=>'ok',"message"=>"Supplier Group Successfully Updated."));
-    }
+      echo json_encode(array("success"=>'ok',"message"=>"Supplier Group Successfully Updated."));
+  }
 
-    function supplierGroupDetails()
+  function supplierGroupDetails()
+  {
+    $data['Title'] = 'List All Supplier Groups';
+    $data['Page'] = 'ListSupplierGroup';
+    $data['suppliergrouplist'] = $this->Common_model->getSupplierGroupInfo();
+    $this->load->view('list-supplier-groups',$data);   
+  }
+  function validateGroupName($groupName){
+    $isExists = $this->Common_model->checkGroupName($groupName);
+    if($isExists && count($isExists) > 0){
+      echo json_encode(array("success"=>'ok', "isExists" => true,"message"=>"Supplier Group Already Exists."));
+    } else {
+      echo json_encode(array("success"=>'ok', "isExists" => false, "message"=>"New Supplier Group."));
+    }
+  }
+
+  function addNewSupplierGroup()
+  {
+    $data['Title'] = 'Add New Supplier Group';
+    $data['Page'] = 'AddNewGroup';  
+    $data['slottype'] = $this->Common_model->getTableData('slottypes','Active');
+    $this->load->view('add-new-group-to-list',$data);   
+  }
+
+  function saveGroup()
+  {
+    $data['SupplierGroup'] = $this->input->post('supplierGroup');
+    $data['DockTypeID'] = $this->input->post('dockType');
+    $data['AvailableTimings'] = $this->input->post('availableTimings');
+    $this->Common_model->insertSupplierGroup($data);
+    echo json_encode(array("success"=>'ok', "isSaved" => true,"message"=>"Supplier Group Created Successfully."));
+    // $this->session->set_flashdata('msg',$data['SupplierGroup'].' has been Created Successfully');
+    // $this->session->set_flashdata('type','done');
+    // redirect($_SERVER['HTTP_REFERER']); 
+  }
+
+  function editSupplierGroup($GroupID)
+  {
+    $data['Title'] = 'Edit Supplier Group Details';
+    $data['Page'] = 'ListSupplierGroup';
+    $data['slottype'] = $this->Common_model->getTableData('slottypes','Active');
+    $data['suppliergrouplist'] = $this->Common_model->getSupplierById($GroupID);
+    $this->load->view('edit-Supplier-Group',$data);   
+  }
+
+  function updateSupplierGroupTime(){
+    $data['AvailableTimings'] = $this->input->post('availableTimings');
+    $data['DockTypeID'] = $this->input->post('dockType');
+    $selectedGroup =  $this->input->post('selectedGroup');
+    $this->Common_model->updateSupplierGroup($data, $selectedGroup);
+  }
+
+  function updateSupplierGroupDetails(){
+    if($this->input->post())
     {
-        $data['Title'] = 'List All Supplier Groups';
-        $data['Page'] = 'ListSupplierGroup';
-        $data['suppliergrouplist'] = $this->Common_model->getSupplierGroupInfo();
-        $this->load->view('list-supplier-groups',$data);
+      $selectedGroup =  $this->input->post('group_Id');
+      $data['AvailableTimings'] = $this->input->post('availableTimings');
+      $data['DockTypeID'] = $this->input->post('dockType');
+      $this->Common_model->updateSupplierGroup($data, $selectedGroup);
+      $this->session->set_flashdata('msg', 'Supplier Group has been Updated Successfully');
+      $this->session->set_flashdata('type','done');
     }
+    redirect($_SERVER['HTTP_REFERER']); 
+  }
 
-    function validateGroupName($groupName){
-        $isExists = $this->Common_model->checkGroupName($groupName);
-        if($isExists && count($isExists) > 0){
-            echo json_encode(array("success"=>'ok', "isExists" => true,"message"=>"Supplier Group Already Exists."));
-        } else {
-            echo json_encode(array("success"=>'ok', "isExists" => false, "message"=>"New Supplier Group."));
-        }
-    }
+  function supplierGroupById($id){
+    $groupDetails = $this->Common_model->getSupplierById($id);
+    echo json_encode($groupDetails);
+  }
 
-    function addNewSupplierGroup()
-    {
-        $data['Title'] = 'Add New Supplier Group';
-        $data['Page'] = 'AddNewGroup';
-        $data['slottype'] = $this->Common_model->getTableData('slottypes','Active');
-        $this->load->view('add-new-group-to-list',$data);
-    }
-
-    function saveGroup()
-    {
-        $data['SupplierGroup'] = $this->input->post('supplierGroup');
-        $data['DockTypeID'] = $this->input->post('dockType');
-        $data['AvailableTimings'] = $this->input->post('availableTimings');
-        $this->Common_model->insertSupplierGroup($data);
-        echo json_encode(array("success"=>'ok', "isSaved" => true,"message"=>"Supplier Group Created Successfully."));
-    }
-
-    function editSupplierGroup($GroupID)
-    {
-        $data['Title'] = 'Edit Supplier Group Details';
-        $data['Page'] = 'ListSupplierGroup';
-        $data['slottype'] = $this->Common_model->getTableData('slottypes','Active');
-        $data['suppliergrouplist'] = $this->Common_model->getSupplierById($GroupID);
-        $this->load->view('edit-Supplier-Group',$data);
-    }
-
-    function updateSupplierGroupTime(){
-        $data['AvailableTimings'] = $this->input->post('availableTimings');
-        $data['DockTypeID'] = $this->input->post('dockType');
-        $selectedGroup =  $this->input->post('selectedGroup');
-        $this->Common_model->updateSupplierGroup($data, $selectedGroup);
-    }
-
-    function updateSupplierGroupDetails(){
-        if($this->input->post())
-        {
-            $selectedGroup =  $this->input->post('group_Id');
-            $data['AvailableTimings'] = $this->input->post('availableTimings');
-            $data['DockTypeID'] = $this->input->post('dockType');
-            $this->Common_model->updateSupplierGroup($data, $selectedGroup);
-            $this->session->set_flashdata('msg', 'Supplier Group has been Updated Successfully');
-            $this->session->set_flashdata('type','done');
-        }
-        redirect($_SERVER['HTTP_REFERER']);
-    }
-
-    function supplierGroupById($id){
-        $groupDetails = $this->Common_model->getSupplierById($id);
-        echo json_encode($groupDetails);
-    }
-
-    function deleteGroup($GroupID)
-    {
-        if(empty($GroupID)) { redirect(base_url('Dashboard')); }
-        $data['detail'] = $this->Common_model->deleteSupplierGroupById($GroupID);
-        echo json_encode(array("success"=>'ok',"message"=>"Group Successfully Deleted."));
-    }
+  function deleteGroup($GroupID)
+  {
+    if(empty($GroupID)) { redirect(base_url('Dashboard')); }
+    $data['detail'] = $this->Common_model->deleteSupplierGroupById($GroupID);
+    echo json_encode(array("success"=>'ok',"message"=>"Group Successfully Deleted."));
+  }
 
   function fetchAttachments(){
       $userId = $this->input->get('userId');
@@ -159,7 +162,7 @@ class Users extends CI_Controller
     } else {
       $data['Title'] = 'Create New Supplier';
     }
-    $data['Page'] = 'adduser';
+    $data['Page'] = 'adduser'; 
     $data['SupplierGroup'] = $this->Common_model->getSupplierGroupdetails();
     $data['vtype'] = $this->Common_model->getTableData('vechicletype','Active');
     $data['company'] = $this->Common_model->getTableData('company','Active');
@@ -229,8 +232,8 @@ class Users extends CI_Controller
     } else {
       $data['Title'] = 'Edit Suppliers';
     }
-    $data['Page'] = 'listuser';
-      $data['SupplierGroup'] = $this->Common_model->getSupplierGroupdetails();
+    $data['Page'] = 'listuser'; 
+    $data['SupplierGroup'] = $this->Common_model->getSupplierGroupdetails();
     $data['vtype'] = $this->Common_model->getTableData('vechicletype','Active');
     $data['userdetail'] = $this->User_model->GetUsersDetailsByUserID($UserUID);
     $data['company'] = $this->Common_model->getTableData('company','Active');
@@ -374,7 +377,7 @@ class Users extends CI_Controller
       {
         $this->session->set_flashdata('msg',$data['UserName'].' has been Create Error');
       } else {
-        $this->session->set_flashdata('msg','Kindly try with new E-mail address.');
+        $this->session->set_flashdata('msg','Email Already Exit. Try again!.');
       }
       $this->session->set_flashdata('type','error');
     }
@@ -419,7 +422,7 @@ class Users extends CI_Controller
 		  {
 		  	$this->session->set_flashdata('msg',$data['UserName'].' has been Create Error');
 		  }	else {
-		  	$this->session->set_flashdata('msg','Kindly try with new E-mail address.');
+		  	$this->session->set_flashdata('msg','Email Already Exit. Try again!.');
 		  }
 		  $this->session->set_flashdata('type','error');
 		}
@@ -440,7 +443,6 @@ class Users extends CI_Controller
      $data['PhoneNumber'] = $this->input->post('PhoneNumber');
      $data['UserName'] = $this->input->post('UserName');
      $data['SupplierGroupID'] = $this->input->post('SupplierGroup');
-     /*$data['Password'] = $this->input->post('Password');*/
      /*$data['VNo'] = $this->input->post('VNo');
      $data['VType'] = $this->input->post('VType');*/
      $data['Supplier'] = $this->input->post('Supplier');
@@ -461,7 +463,7 @@ class Users extends CI_Controller
       {
         $this->session->set_flashdata('msg',$data['UserName'].' has been Update Error');
       } else {
-        $this->session->set_flashdata('msg','Kindly try with new User name.');
+        $this->session->set_flashdata('msg','UserName Already Exit. Try again!.');
       }
       $this->session->set_flashdata('type','error');
     }
@@ -493,7 +495,7 @@ class Users extends CI_Controller
       {
         $this->session->set_flashdata('msg',$data['UserName'].' has been Update Error');
       } else {
-        $this->session->set_flashdata('msg','Kindly try with new User name.');
+        $this->session->set_flashdata('msg','UserName Already Exit. Try again!.');
       }
       $this->session->set_flashdata('type','error');
       }
@@ -541,7 +543,14 @@ class Users extends CI_Controller
 
   public function config_email()
   {
-    $config = Array(  
+    $config = Array( 
+      'protocol' => 'smtp', 
+      'smtp_host' => 'email-smtp.us-east-1.amazonaws.com', 
+      'smtp_port' => 587, 
+      'smtp_user' => 'AKIA3SSJBQUNC5FHZTP7', 
+      'smtp_pass' => 'BNDs7tsY4Jzt7g6af5qdxzPKXXyEDmhBN3SfRKSQKbBY',
+      'smtp_crypto' => 'tls',
+      'mailtype'  => 'html', 
       'charset'   => 'iso-8859-1',
       'newline' => '\r\n',
       'starttls'  => true,

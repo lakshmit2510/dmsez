@@ -84,21 +84,25 @@
             },
             success:function(data) {
               if (data.success) {
-                table3.row($(this).parents('tr')[0]).remove().draw(false);
+                // table3.row($(_self).parent('tr')).remove().draw(false);
                 
                 $.notify({
                     message: data.message,
                 }, {
                     element: 'body',
                     type: "success",
+                    delay: 50,
                     placement: {
                       from: "top",
                       align: "right"
-                    }
+                    },
+                    onClose: function(){
+                      location.reload();
+                    },
                   });
                   
               }
-              location.reload();
+              // location.reload();
             }
           });
         });
